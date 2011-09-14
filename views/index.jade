@@ -1,0 +1,21 @@
+!!! 5
+html
+	head
+		title Beauvoir
+		include includes/scripts
+	body
+		h1
+			img(src=user.getGravatar())
+			#logo
+				include includes/logo
+			| eauvoir
+
+		ul#tasks.tasks
+
+		.hide
+			//- Templates
+			#single-task-view
+				li.task(class="{status} priority-{priority}")
+					.toggle &#10003;
+					.archive Archive
+					.name {name}

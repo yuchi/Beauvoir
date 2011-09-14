@@ -1,0 +1,166 @@
+
+@import './utils/vendor';
+@import 'nib';
+
+// Colors
+
+pr_0 = #313131
+pr_1 = #111
+pr_2 = #311111
+
+c_base03 =    #002b36
+c_base02 =    #073642
+c_base01 =    #586e75
+c_base00 =    #657b83
+c_base0 =     #839496
+c_base1 =     #93a1a1
+c_base2 =     #eee8d5
+c_base3 =     #fdf6e3
+c_yellow =    #b58900
+c_orange =    #cb4b16
+c_red =       #dc322f
+c_magenta =   #d33682
+c_violet =    #6c71c4
+c_blue =      #268bd2
+c_cyan =      #2aa198
+c_green =     #859900
+
+m_color = c_base03
+m_alert = c_red
+m_info = c_blue
+m_success = c_cyan
+m_error	= c_orange
+
+#e
+	err
+
+// Logo
+
+logo(bg)
+	_a = 21px
+	_b = 34px
+
+	.in
+		position absolute
+		left 0px
+		background bg
+	.rc, .sq
+		overflow hidden
+		position relative
+		width _b
+
+	.rc
+		height _a
+		.in
+			bottom 0px
+			_x = (_b / 2) + _a
+			width _x
+			height _x
+			border-radius bottom right _x
+	.sq
+		height _b
+		.in
+			top 0px
+			_x = _b
+			width _x
+			height _x
+			border-radius top right _x
+
+// Contents
+
+body
+	background white
+	font-family sans-serif
+	margin 0
+	padding 0
+
+	> h1
+		margin 10px
+		padding 0px
+		color m_color
+
+		img
+			width 55px
+			height 55px
+		img
+		#logo
+			display inline-block
+			vertical-align middle
+			position relative
+			top -1px
+
+		#logo
+			logo c_base03
+
+
+.hide
+	display none
+
+
+tick_size = 25px
+
+.tasks
+	border-radius 5px
+	width 100%
+	padding 0px
+.task
+	padding 5px
+	list-style none
+	display block
+	overflow hidden
+
+	.toggle
+		width tick_size
+		height tick_size
+		margin 5px
+		line-height tick_size
+		font-size tick_size * 0.8
+		float left
+		border-radius 2px
+		text-indent tick_size * -2
+		overflow hidden
+		background c_base02
+		cursor pointer
+		text-align center
+		transition text-indent slow, color slow, background slow
+		box-shadow inset 0px 2px 2px -2px c_base03
+		text-shadow 0px 1px 1px c_base03
+
+	.name
+		line-height tick_size - 3px
+		padding 8px 0 5px
+		margin-left tick_size + 17px
+
+	.archive
+		display block
+		cursor pointer
+		float right
+		margin 5px
+		line-height tick_size - 3px
+		padding-top 3px
+		transition opacity fast ease slow
+		color c_base03
+		opacity 0
+
+	&.completed
+		.toggle
+			text-indent 0px
+			background grey
+		.name
+			text-decoration line-through
+		&:hover .archive
+			opacity 1
+			transition opacity fast ease 0
+
+	task(main, bg)
+		background bg
+		color main
+		.toggle
+			color bg
+
+	&.priority-1
+		task c_base03 white
+	&.priority-2
+		task c_orange white
+	&.priority-3
+		task m_alert c_base3

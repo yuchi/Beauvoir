@@ -1,0 +1,13 @@
+!!! 5
+html
+	head
+		title Beauvoir
+		include includes/scripts
+	body
+		h1 Beauvoir
+		h2 Login
+		
+		form#login(method="POST",action="/login")
+			input(type="text",name="username",placeholder="Username")
+			input(type="password",name="password",placeholder="Password")
+			button(type="submit") Login
