@@ -12,6 +12,16 @@
   "directories": {
     "lib": "lib"
   },
+  "dependencies": {
+    "underscore": "1.1.7",
+	"hashlib": "*",
+	"connect": "*",
+	"express": "*",
+	"connect-redis": "*",
+	"winston": "*",
+	"express-resource": "*",
+	"nohm": "latest"
+  },
   "engines": {
     "node": "*"
   }
