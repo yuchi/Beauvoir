@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 900dd1f7fade874ba7520c833e287732cf6136ca
 (function() {
   var RedisStore, app, auth, config_file, dev_port, express, fs, http, jade, path, server_port, signInUser, stylus, version, winston, _;
   version = '0.1.0';
@@ -121,6 +124,7 @@
     return winston.info("Beauvoir started on port " + port);
   });
 }).call(this);
+<<<<<<< HEAD
 =======
 var http = require('http');
 
@@ -132,3 +136,5 @@ http.createServer(function (req, res) {
 }).listen(80);
 
 >>>>>>> f7ee4a1d381507ada392a35813d0098c6b1cda59
+=======
+>>>>>>> 900dd1f7fade874ba7520c833e287732cf6136ca
