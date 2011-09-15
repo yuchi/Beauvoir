@@ -1,0 +1,18 @@
+{
+  "name": "Beauvoir",
+  "description": "Simple project management app built with node.js",
+  "version": "0.1.0",
+  "homepage": "https://github.com/yuchi/Beauvoir",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yuchi/Beauvoir.git"
+  },
+  "author": "Pier Paolo Ramon <ramonpierre@gmail.com>",
+  "main": "server.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "engines": {
+    "node": "*"
+  }
+}
