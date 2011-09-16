@@ -4,7 +4,7 @@ winston = require 'winston'
 _ = require 'underscore'
 redis = require 'redis'
 persistence = redis.createClient()
-hashlib = require 'hashlib'
+hashlib = require './utils/hashlib'
 
 models = require './models'
 
