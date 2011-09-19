@@ -35,6 +35,8 @@ update = (req, res) ->
 				res.send JSON.parse task.allProperties true
 			else if relationError
 				action = if relationName == 'assignedTo' then 'assign' else 'completely create'
+				if relationName
+					winston.error "There has been a relationError"
 				winston.error "Task \##{task.id} could not be #{action}d"
 				winston.debug JSON.stringify task.errors
 				res.send 500
@@ -48,10 +50,22 @@ update = (req, res) ->
 	if assignedTo
 		# assignedToId = assignedTo.id or assignedTo
 		assignedUser = new models.User (assignedTo.id or assignedTo)
+		assignedUser.load (assignedTo.id or assignedTo), (err, props) ->
+			if not err
+				owner.load req.session.userId, (err, props) ->
+					if not err
+						complete()
+					else
+						winston.error 'Error retrieving users'
+			else
+				winston.error 'Error retrieving users'
 	else
 		assignedUser = owner
-
-	complete();
+		owner.load req.session.userId, (err, props) ->
+			if not err
+				complete()
+			else
+				winston.error 'Error retrieving users'
 
 _.extend exports,
 
@@ -70,24 +84,28 @@ _.extend exports,
 						if not err
 							attributes = JSON.parse task.allProperties true
 							attributes.archived = task.isArchived()
-							if attributes.archived
+							if attributes.archived and false
 								pass()
 							else
+								winston.info "Task \##{id} loaded"
 								# This whole thing here sucks. It's better to create some ServiceUtils.
 								task.getAll 'User', 'assignedTo', (err, userIds) ->
-									(pass2 = _.after userIds.length+1, ->
-										objects.push attributes
-										pass()
-									)()
-									_.each userIds, (assignedId) ->
-										assigned = new models.User assignedId
-										assigned.load assignedId, (err, properties) ->
-											if err
-												winston.error "User \##{assignedId} could not be retrieved"
-											else
-												attributes['assignedTo'] = assigned.expose()
-												#do something with user
-											pass2()
+									if not err
+										(pass2 = _.after userIds.length+1, ->
+											objects.push attributes
+											pass()
+										)()
+										_.each userIds, (assignedId) ->
+											assigned = new models.User assignedId
+											assigned.load assignedId, (err, properties) ->
+												if err
+													winston.error "User \##{assignedId} could not be retrieved"
+												else
+													attributes['assignedTo'] = assigned.expose()
+													#do something with user
+												pass2()
+									else
+										winston.error "Error occured loading assigned users"
 
 						else
 							winston.error "Some error occured loading Task \##{id}"
