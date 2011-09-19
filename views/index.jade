@@ -36,4 +36,6 @@ html
 					.info
 						span.name {name}
 						span.assignedTo
-							| {#assignedTo}{username}{/assignedTo}
+							| {#assignedTo}
+							span(class="{#closed}closed{/closed}") {username}
+							| {/assignedTo}

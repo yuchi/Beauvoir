@@ -143,6 +143,11 @@ tick_size = 25px
 			margin 0 .5ex
 			&:before
 				content '→ '
+			span + span
+				&:before
+					content: ', '
+			.closed
+				text-decoration line-through
 
 	.archive
 		display none

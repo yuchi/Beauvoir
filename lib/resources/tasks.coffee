@@ -9,12 +9,18 @@ update = (req, res) ->
 	id = attributes.id
 	delete attributes.id
 
+	# remove assignations
 	assignedTo = attributes.assignedTo
 	delete attributes.assignedTo
 
+	if _.isArray assignedTo
+		assignedTo = assignedTo[0]
+
+	# is updating?
 	task = req.task or new models.Task id
 	action = if task.id == id || id then 'update' else 'create'
 
+	# set modifiedDate and (if necessary) createDate
 	now = (new Date()).getTime()
 	attributes.createDate = now if action == 'create'
 	attributes.modifiedDate = now
@@ -23,16 +29,39 @@ update = (req, res) ->
 	if task.isArchived() != attributes.archived
 		action = if attributes.archived then 'archive' else action 
 
+	# Action from json payload
+	closing = !!attributes.closing
+	opening = !!attributes.opening
+
+	# `assigning` attributes from json
+	assigning = !!attributes.assigning
+
+	for prop in ['closed','open','opening','closing','assigning','status']
+		delete attributes[prop]
+
+	# setting things up
 	task.p attributes
 
 	complete = ->
-		task.link assignedUser, 'assignedTo'
+		if assigning or not req.task?
+			console.log 'passo di qui'
+			task.link assignedUser, 'assignedTo'
+		if closing
+			task.link actor, 'assignedTo'
+			task.link actor, 'closedBy'
+		else if opening
+			task.unlink actor, 'closedBy'
+
 		#task.link owner, 'createdBy'
 
 		task.save (err, relationError, relationName) ->
 			if not err
 				winston.info "Task \##{task.id} #{action}d successfully"
-				res.send JSON.parse task.allProperties true
+				task.expose (err, json) ->
+					if not err
+						res.send json
+					else
+						winston.error "Error retrieving task data"
 			else if relationError
 				action = if relationName == 'assignedTo' then 'assign' else 'completely create'
 				if relationName
@@ -45,23 +74,23 @@ update = (req, res) ->
 				winston.debug JSON.stringify task.errors
 				res.send 500
 
-	owner = new models.User req.session.userId
+	actor = new models.User req.session.userId
 
 	if assignedTo
 		# assignedToId = assignedTo.id or assignedTo
 		assignedUser = new models.User (assignedTo.id or assignedTo)
 		assignedUser.load (assignedTo.id or assignedTo), (err, props) ->
 			if not err
-				owner.load req.session.userId, (err, props) ->
+				actor.load req.session.userId, (err, props) ->
 					if not err
 						complete()
 					else
 						winston.error 'Error retrieving users'
 			else
-				winston.error 'Error retrieving users'
+				winston.error 'Error retrieving user \#'+(assignedTo.id or assignedTo)
 	else
-		assignedUser = owner
-		owner.load req.session.userId, (err, props) ->
+		assignedUser = actor
+		actor.load req.session.userId, (err, props) ->
 			if not err
 				complete()
 			else
@@ -71,41 +100,21 @@ _.extend exports,
 
 	index: (req, res) ->
 		objects = []
-		mock = new models.Task
-		mock.find (err, ids) -> # find all
+		models.Task.find (err, ids) ->
 			if not err
 				(pass = _.after ids.length+1, ->
 					winston.info "Tasks list successfully retrieved"
 					res.send objects
 				)()
 				_.each ids, (id) ->
-					task = new models.Task id
-					task.load id, (err, properties) ->
+					models.Task.load id, (err, properties) ->
 						if not err
-							attributes = JSON.parse task.allProperties true
-							attributes.archived = task.isArchived()
-							if attributes.archived and false
-								pass()
-							else
-								winston.info "Task \##{id} loaded"
-								# This whole thing here sucks. It's better to create some ServiceUtils.
-								task.getAll 'User', 'assignedTo', (err, userIds) ->
-									if not err
-										(pass2 = _.after userIds.length+1, ->
-											objects.push attributes
-											pass()
-										)()
-										_.each userIds, (assignedId) ->
-											assigned = new models.User assignedId
-											assigned.load assignedId, (err, properties) ->
-												if err
-													winston.error "User \##{assignedId} could not be retrieved"
-												else
-													attributes['assignedTo'] = assigned.expose()
-													#do something with user
-												pass2()
-									else
-										winston.error "Error occured loading assigned users"
+							@expose (err, object) =>
+								if not err
+									objects.push object
+									pass()
+								else
+									winston.error 'Error retrieving task properties'
 
 						else
 							winston.error "Some error occured loading Task \##{id}"
@@ -115,7 +124,11 @@ _.extend exports,
 				res.send 500
 
 	show: (req, res) ->
-		res.send JSON.parse req.task.allProperties true
+		req.task.expose (err, json) ->
+			if not err
+				res.send json
+			else
+				res.send 500
 
 	create: update
 	update: update

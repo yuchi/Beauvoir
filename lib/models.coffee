@@ -39,12 +39,15 @@ User = nohm.model 'User',
 		email:
 			type: 'string'
 			unique: true
+			defaultValue: 'error@error.com'
 			validations: ['notEmpty','email']
 		fullname:
 			type: 'string'
 			unique: false # !!!
 		profile:
 			type: 'json'
+
+	idGenerator: 'increment'
 
 	methods:
 		expose: ->
@@ -79,9 +82,9 @@ Task = nohm.model 'Task',
 				['min', 1]
 				['max', 3]
 			]
-		status:
-			type: 'string'
-			index: true
+		minimum:
+			type: 'integer'
+			defaultValue: -1
 		archived:
 			type: 'boolean'
 			index: true
@@ -93,10 +96,76 @@ Task = nohm.model 'Task',
 			type: 'timestamp'
 			validations: ['notEmpty']
 
+	idGenerator: 'increment'
+
 	methods:
+
 		isArchived: ->
 			arch = @p 'archived'
-			not arch or arch != 'false'
+			if !!arch == arch
+				arch
+			else
+				arch != 'false'
+
+		# Async!
+		expose: (callback) ->
+
+			task = @
+
+			attributes = @allProperties()
+			attributes.archived = @isArchived()
+			attributes.assignedTo = []
+
+			@getAll 'User', 'assignedTo', (err, ids) =>
+				(pass = _.after ids.length+1, _.once =>
+					attributes.archived = @isArchived()
+					attributes.closed = @isClosed attributes
+					callback null, attributes
+				)()
+				if not err
+					for userId in ids
+						User.load userId, (err, properties) ->
+							if not err
+								userAttributes = @expose()
+								task.belongsTo @, 'closedBy', (err, closed) ->
+									if not err
+										userAttributes.closed = closed
+										attributes.assignedTo.push userAttributes
+										pass()
+									else
+										callback err
+										winston.error "Error retrieving closing status for user \##{userId}"
+							else
+								callback err
+								winston.error "Error retrieving user \##{userId}"
+				else
+					callback err
+					winston.error "Error retrieving assigned users to task \##{@id}"
+			return @
+
+		isClosed: (json) ->
+			minimum = @property 'minimum'
+
+			calculate = (json) ->
+				minimum or= json.assignedTo.length
+				if minimum < 0
+					return (_ json.assignedTo).chain().pluck('closed').compact().value().length > 0
+				else
+					for assigned in json.assignedTo
+						if assigned.closed
+							minimum--
+					return minimum <= 0
+
+			if _.isFunction json
+				callback = json
+				@expose (err, json) ->
+					if not err
+						callback null, calculate json
+					else
+						callback err
+			else
+				calculate json
+
 		###
 		getName: ->
 			return @p 'name'

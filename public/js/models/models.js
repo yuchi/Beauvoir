@@ -13,7 +13,7 @@
       return {
         name: '',
         priority: 1,
-        status: 'open',
+        closed: false,
         archived: false
       };
     },
@@ -34,19 +34,10 @@
       }
       return this;
     },
-    toggle: function(options) {
-      var newstatus;
-      newstatus = this.reverse[this.get('status')];
-      this.save({
-        status: newstatus
-      }, options);
-      return this;
-    },
     archive: function(options) {
-      this.save({
+      return this.save({
         archived: true
       }, options);
-      return this;
     },
     foreseePriority: function(name) {
       var excls, match, priority;
@@ -83,20 +74,21 @@
     model: Task,
     events: {
       'click .toggle': 'toggle',
-      'click .archive': 'archive',
-      'dblclick .name': 'open',
-      'blur .name': 'close'
+      'click .archive': 'archive'
     },
     initialize: function(options) {
       options || (options = {});
       _.extend(this, options);
       this.model.view = this;
-      this.model.bind('change:status', _.bind(this.render, this));
+      this.model.bind('change', _.bind(this.render, this));
       this.model.bind('destroy', _.bind(this.remove, this));
       return this.model.bind('change:archived', _.bind(this.onArchive, this));
     },
     render: function() {
-      dust.render('task', this.model.toJSON(), __bind(function(err, out) {
+      var json;
+      json = this.model.toJSON();
+      json.status = this.model.get('closed') ? 'completed' : 'open';
+      dust.render('task', json, __bind(function(err, out) {
         var newel;
         newel = $(out);
         $(this.el).html(newel.html());
@@ -108,26 +100,35 @@
       return this;
     },
     toggle: function(event) {
-      this.model.toggle();
-      return this;
+      var params;
+      console.log(_.clone(this.model.attributes));
+      params = {};
+      if (this.model.get('closed')) {
+        params.opening = true;
+      } else {
+        params.closing = true;
+      }
+      return this.model.save(params, {
+        success: __bind(function() {
+          return this.model.unset('closing');
+        }, this)
+      });
     },
     archive: function(event) {
       this.model.archive();
       return this;
     },
-    open: function(event) {
-      var self;
-      self = $(event.target);
-      return self.attr('contenteditable', true);
-    },
-    close: function(event) {
-      var self;
-      self = $(event.target);
-      self.attr('contenteditable', false);
-      return this.model.save({
-        name: (this.$('.name')).text()
-      });
-    },
+    /*
+    	open: (event) ->
+    		self = $(event.target)
+    		self.attr 'contenteditable', true
+    
+    	close: (event) ->
+    		self = $(event.target)
+    		self.attr 'contenteditable', false
+    		@model.save
+    			name: (@$ '.name').text()
+    	*/
     onArchive: function(model, archived) {
       if (archived) {
         this.hide();
@@ -165,10 +166,11 @@
       if (priority == null) {
         priority = 1;
       }
+      console.log(arguments);
       return Tasks.create({
         name: name,
         priority: priority,
-        assignedTo: assignedTo
+        assignedTo: [assignedTo]
       });
     }
   });

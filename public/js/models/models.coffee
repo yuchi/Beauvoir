@@ -17,7 +17,7 @@ Task = Backbone.Model.extend
 		{
 			name: ''
 			priority: 1
-			status: 'open'
+			closed: false
 			archived: false
 		}
 
@@ -33,15 +33,8 @@ Task = Backbone.Model.extend
 				priority: @foreseePriority()
 		@ 
 
-
-	toggle: (options) ->
-		newstatus = @reverse[ @get 'status' ]
-		@save {status: newstatus}, options
-		@
-
 	archive: (options) ->
 		@save {archived: true}, options
-		@
 
 	foreseePriority: (name = @get 'name') ->
 		return 1 if not name
@@ -76,19 +69,21 @@ TaskView = Backbone.View.extend
 	events:
 		'click .toggle'  : 'toggle'
 		'click .archive' : 'archive'
-		'dblclick .name' : 'open'
-		'blur .name'     : 'close'
+	#	'dblclick .name' : 'open'
+	#	'blur .name'     : 'close'
 
 	initialize: (options) ->
 		options or= {}
 		_.extend this, options
 		@model.view = this
-		@model.bind 'change:status',   _.bind @render,    @
+		@model.bind 'change',          _.bind @render,    @
 		@model.bind 'destroy',         _.bind @remove,    @
 		@model.bind 'change:archived', _.bind @onArchive, @
 
 	render: ->
-		dust.render 'task', @model.toJSON(), (err, out) =>
+		json = @model.toJSON()
+		json.status = if @model.get 'closed' then 'completed' else 'open'
+		dust.render 'task', json, (err, out) =>
 			newel = $ out
 			$(@el).html newel.html()
 			$(@el).attr
@@ -98,13 +93,23 @@ TaskView = Backbone.View.extend
 		@
 
 	toggle: (event) ->
-		@model.toggle()
-		@
+
+		console.log _.clone @model.attributes
+
+		params = {}
+		if @model.get 'closed'
+			params.opening = true
+		else
+			params.closing = true
+
+		@model.save params,
+			success: => @model.unset 'closing'			
 
 	archive: (event) ->
 		@model.archive()
 		@
 
+	###
 	open: (event) ->
 		self = $(event.target)
 		self.attr 'contenteditable', true
@@ -114,6 +119,7 @@ TaskView = Backbone.View.extend
 		self.attr 'contenteditable', false
 		@model.save
 			name: (@$ '.name').text()
+	###
 
 	onArchive: (model, archived) ->
 		if archived
@@ -145,10 +151,11 @@ AppView = Backbone.View.extend
 		collection.each @addOne
 
 	create: (name, assignedTo, priority = 1) ->
+		console.log arguments
 		Tasks.create
 			name: name
 			priority: priority
-			assignedTo: assignedTo
+			assignedTo: [assignedTo]
 
 Creation = Backbone.View.extend
 	events:

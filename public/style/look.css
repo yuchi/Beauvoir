@@ -113,6 +113,12 @@ body > h1 #logo .sq .in {
 .task .info .assignedTo:before {
   content: "→ ";
 }
+.task .info .assignedTo span + span:before {
+  content: ", ";
+}
+.task .info .assignedTo .closed {
+  text-decoration: line-through;
+}
 .task .archive {
   display: none;
   cursor: pointer;
