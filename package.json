@@ -1,7 +1,7 @@
 {
   "name": "Beauvoir",
   "description": "Simple project management app built with node.js",
-  "version": "0.1.0",
+  "version": "0.1.10",
   "homepage": "https://github.com/yuchi/Beauvoir",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
 	  "connect-redis": "*",
 	  "winston": "*",
 	  "express-resource": "*",
-	  "nohm": "latest"
+	  "nohm": "0.6"
   },
   "engines": {
     "node": "*"
