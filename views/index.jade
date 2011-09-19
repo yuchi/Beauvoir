@@ -2,6 +2,7 @@
 html
 	head
 		title Beauvoir
+		meta(name="viewport",content="width = device-height")
 		include includes/scripts
 	body
 		h1
@@ -10,12 +11,29 @@ html
 				include includes/logo
 			| eauvoir
 
+		form#creation.input.b(action="/lol")
+			.flex.f
+				#left.flex
+					.placer
+						input#name.h.f(type="text",placeholder="Create new task",autocomplete='off')
+				#middle.flex
+					.attributes
+						#priority.priority.icon.padded
+				#right.flex
+					.separator.mp_container.mp_full
+						.validator.icon: label(for='assign') @
+						input#assign.h.auto.medium.lockable(type="text",placeholder="Assign (you)",autocomplete='off')
+					.separator
+						button(type='submit') Create
 		ul#tasks.tasks
 
 		.hide
 			//- Templates
 			#single-task-view
-				li.task(class="{status} priority-{priority}")
+				li.task(class="{status} priority-{priority}",tabindex=0)
 					.toggle &#10003;
 					.archive Archive
-					.name {name}
+					.info
+						span.name {name}
+						span.assignedTo
+							| {#assignedTo}{username}{/assignedTo}

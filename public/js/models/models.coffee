@@ -1,17 +1,16 @@
 
-###
+root = this
+
 # Setting up templates
-###
+# --------------------
 
 $ ->
-	tmpl = $('#single-task-view').html()
-	dust.loadSource dust.compile tmpl, 'task'
+	tmpl = $ '#single-task-view'
+	dust.loadSource dust.compile tmpl.html(), 'task'
+	tmpl.remove()
 
-###
 # Client side models
-###
-
-root = this
+# ------------------
 
 Task = Backbone.Model.extend
 	defaults: ->
@@ -27,13 +26,11 @@ Task = Backbone.Model.extend
 		'completed' : 'open'
 
 	initialize: (attributes = {}) ->
+		### Not elegant... ###
 		if not attributes.priority? or attributes.priority == 1
 			attributes.name or= ''
-			match = attributes.name.match /(!+)\s*$/i
-			if match and match[1]
-				excls = match[1].length
-				this.set
-					priority: if excls > 1 then 3 else 2
+			this.set
+				priority: @foreseePriority()
 		@ 
 
 
@@ -46,6 +43,13 @@ Task = Backbone.Model.extend
 		@save {archived: true}, options
 		@
 
+	foreseePriority: (name = @get 'name') ->
+		return 1 if not name
+		match = name.match /(!+)\s*$/i
+		if match and match[1]
+			excls = match[1].length
+			priority = if excls > 1 then 3 else 2
+		priority or 1
 
 TaskList = Backbone.Collection.extend
 	model: Task
@@ -60,6 +64,9 @@ TaskList = Backbone.Collection.extend
 			todo.get('status') == 'completed'
 
 Tasks = new TaskList
+
+# Views
+# -----
 
 TaskView = Backbone.View.extend
 
@@ -84,7 +91,9 @@ TaskView = Backbone.View.extend
 		dust.render 'task', @model.toJSON(), (err, out) =>
 			newel = $ out
 			$(@el).html newel.html()
-			$(@el).attr 'class', newel.attr 'class'
+			$(@el).attr
+				class: newel.attr 'class'
+				tabindex: newel.attr 'tabindex'
 		#$(@el).html @model.get 'name'
 		@
 
@@ -125,6 +134,9 @@ AppView = Backbone.View.extend
 		Tasks.bind 'add', @addOne
 		Tasks.bind 'reset', @addAll
 
+		@creation = new Creation
+			app: @
+
 	addOne: (task) ->
 		view = new TaskView {model: task}
 		$(@el).append view.render().el
@@ -132,15 +144,45 @@ AppView = Backbone.View.extend
 	addAll: (collection) ->
 		collection.each @addOne
 
-	create: (name, priority = 1) ->
+	create: (name, assignedTo, priority = 1) ->
 		Tasks.create
 			name: name
 			priority: priority
+			assignedTo: assignedTo
 
-###
-# Building things up
-###
+Creation = Backbone.View.extend
+	events:
+		'submit' : 'submit'
 
+	defaults: (dynamic) ->
+		el: $ '#creation'
+		$name: $ '#name'
+		$assign: $ '#assign'
+
+	initialize: (options) ->
+		options or= {}
+		_.extend @, @defaults(), options
+		@delegateEvents()
+
+	empty: (callback) ->
+		($ @el).animate( {opacity:0}, 200, =>
+			callback()
+			@$name.val ''
+			@$assign.marcoPolo 'change', ''
+		).animate {opacity:1}, 200
+		@
+
+	submit: (event) ->
+		event.preventDefault()
+		@empty => @app.create @getName(), @getAssignedTo()
+		false
+
+	getAssignedTo: -> @$assign.data 'user'
+
+	getName: -> @$name.val()
+
+# Build and expose
+# ----------------
 
 $ ->
 	App = root.App = new AppView

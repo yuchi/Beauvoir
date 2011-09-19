@@ -18,7 +18,6 @@ body > h1 #logo {
   display: inline-block;
   vertical-align: middle;
   position: relative;
-  top: -1px;
 }
 body > h1 #logo .in {
   position: absolute;
@@ -38,7 +37,9 @@ body > h1 #logo .rc .in {
   bottom: 0px;
   width: 38px;
   height: 38px;
+  -webkit-border-radius-bottomright: 38px;
   -moz-border-radius-bottomright: 38px;
+  border-radius-bottomright: 38px;
   -webkit-border-bottom-right-radius: 38px;
   -webkit-border-bottom-right-radius: 38px;
   -moz-border-radius-bottomright: 38px;
@@ -51,7 +52,9 @@ body > h1 #logo .sq .in {
   top: 0px;
   width: 34px;
   height: 34px;
+  -webkit-border-radius-topright: 34px;
   -moz-border-radius-topright: 34px;
+  border-radius-topright: 34px;
   -webkit-border-top-right-radius: 34px;
   -webkit-border-top-right-radius: 34px;
   -moz-border-radius-topright: 34px;
@@ -66,6 +69,7 @@ body > h1 #logo .sq .in {
   border-radius: 5px;
   width: 100%;
   padding: 0px;
+  margin: 10px 0;
 }
 .task {
   padding: 5px;
@@ -96,13 +100,21 @@ body > h1 #logo .sq .in {
   box-shadow: inset 0px 2px 2px -2px #002b36;
   text-shadow: 0px 1px 1px #002b36;
 }
-.task .name {
+.task .info {
   line-height: 22px;
   padding: 8px 0 5px;
   margin-left: 42px;
 }
+.task .info .assignedTo {
+  color: #808080;
+  padding: 0 0.5ex;
+  margin: 0 0.5ex;
+}
+.task .info .assignedTo:before {
+  content: "→ ";
+}
 .task .archive {
-  display: block;
+  display: none;
   cursor: pointer;
   float: right;
   margin: 5px;
@@ -121,6 +133,9 @@ body > h1 #logo .sq .in {
 }
 .task.completed .name {
   text-decoration: line-through;
+}
+.task.completed .archive {
+  display: block;
 }
 .task.completed:hover .archive {
   opacity: 1;
@@ -149,4 +164,138 @@ body > h1 #logo .sq .in {
 }
 .task.priority-3 .toggle {
   color: #fdf6e3;
+}
+.flex {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+}
+.flex.f {
+  width: 100%;
+}
+.flex .placer {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+}
+#creation {
+  margin: 10px;
+}
+#creation #left {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+}
+#creation #middle {
+  -webkit-box-flex: 0;
+  -moz-box-flex: 0;
+  box-flex: 0;
+}
+#creation #right {
+  -webkit-box-flex: 0;
+  -moz-box-flex: 0;
+  box-flex: 0;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  box-align: center;
+}
+.input.b {
+  margin: 5px;
+  background: #fff;
+  border: 1px solid #808080;
+  border-color: #8d8d8d #c0c0c0 #c0c0c0;
+  font-size: 20px;
+  padding: 0px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  -webkit-transition: border-color 200ms, color 200ms;
+  -moz-transition: border-color 200ms, color 200ms;
+  transition: border-color 200ms, color 200ms;
+}
+.input.b:hover {
+  border-color: #4d4d4d #808080 #808080;
+}
+.input.b.focus {
+  border-color: #861d50 #d33682 #d33682;
+}
+.input input.h {
+  padding: 0px 5px;
+  width: 200px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 35px;
+  display: inline-block;
+  vertical-align: middle;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  -webkit-appearance: none;
+}
+.input input.h,
+.input input.h:hover,
+.input input.h:focus,
+.input input.h:active {
+  outline: none;
+  border: 0px none;
+  font: 20px Helvetica, Arial, sans-serif;
+}
+.input input.h.f {
+  width: 100%;
+}
+.input input.h.auto {
+  -webkit-transition: width 200ms;
+  -moz-transition: width 200ms;
+  transition: width 200ms;
+  width: 130px;
+}
+.input input.h.auto.medium.filled,
+.input input.h.auto.medium.focus {
+  width: 160px;
+}
+.input input.h.lockable.valid {
+  color: #cdcdcd;
+}
+.input .icon {
+  display: inline-block;
+  vertical-align: middle;
+  overflow: hidden;
+  -webkit-transition: color 200ms;
+  -moz-transition: color 200ms;
+  transition: color 200ms;
+  line-height: 30px;
+  overflow: visible;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  cursor: default;
+  padding: 4px 0 1px;
+}
+.input .icon.padded {
+  padding-left: 1ex;
+  padding-right: 1ex;
+}
+.input .icon label[for] {
+  cursor: pointer;
+}
+.input .validator {
+  color: #f3f3f3;
+}
+.input .validator.valid {
+  color: #227dbc;
+}
+.input .priority.priority-1 {
+  color: #f3f3f3;
+}
+.input .priority.priority-2 {
+  color: #cb4b16;
+}
+.input .priority.priority-3 {
+  color: #dc322f;
+}
+.separator {
+  border-left: 1px solid #c0c0c0;
+  margin-left: 2px;
+  padding-left: 5px;
 }

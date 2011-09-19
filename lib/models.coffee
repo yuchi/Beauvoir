@@ -40,15 +40,17 @@ User = nohm.model 'User',
 			type: 'string'
 			unique: true
 			validations: ['notEmpty','email']
-		name:
+		fullname:
 			type: 'string'
 			unique: false # !!!
 		profile:
 			type: 'json'
 
 	methods:
-		test: ->
-			console.log 'hallo'
+		expose: ->
+			id: @id
+			fullname: @p 'fullname'
+			username: @p 'username'
 		###
 		info: (parameter) ->
 			profile = @p 'profile'

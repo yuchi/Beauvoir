@@ -107,6 +107,7 @@
   # Resources
   */
   app.resource('tasks', require('./lib/resources/tasks'));
+  app.resource('users', require('./lib/resources/users'));
   /*
   # Opening app
   */

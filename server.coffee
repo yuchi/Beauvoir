@@ -100,7 +100,7 @@ app.post '/signup', (req, res) ->
 		res.redirect 'home'
 		return
 
-	auth.create req.body.username, req.body.password, req.body.fullname, req.body.email, (err,data)->
+	auth.create req.body.username, req.body.password, req.body.fullname, req.body.email, (err, data)->
 		if err
 			winston.error err
 			res.redirect 'home'
@@ -123,6 +123,7 @@ app.get '/', auth.restrict(), auth.load, (req, res) ->
 
 app.resource 'tasks', require './lib/resources/tasks'
 
+app.resource 'users', require './lib/resources/users'
 
 ###
 # Opening app

@@ -33,15 +33,16 @@ create = exports.create = (username, password, fullname, email, fn) ->
 	user.prop(
 		{
 			username: username
-			salt: salt
+			fullname: fullname
 			password: hashed
 			email: email
+			salt: salt
 		}, true
 	)
 
 	user.save (err) ->
 		if err
-			fn err
+			fn err, user
 		else
 			fn null, user
 

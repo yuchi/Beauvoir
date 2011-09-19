@@ -1,0 +1,104 @@
+@charset "UTF-8";
+
+/* The input. */
+input.mp_input {
+  border: 1px solid #000000;
+  font: inherit;
+  font-size: 100%;
+  margin: 0;
+  outline: none;
+  padding: 3px;
+  width: 250px;
+}
+
+/* Ordered list for display results. */
+ol.mp_list {
+  background-color: #FFFFFF;
+  border: 1px solid #C0C0C0;
+  overflow: hidden;
+  position: absolute;
+  width: 256px;
+  z-index: 99999;
+  top: 100%;
+  margin: 5px;
+  padding: 5px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.mp_container {
+  position: relative;
+}
+
+.mp_left ol.mp_list {
+  right: 0px;
+}
+
+.mp_right ol.mp_list {
+  left: 0px;
+}
+
+.mp_full ol.mp_list {
+  width: 100%;
+  margin-left: -5px;
+  margin-right: -5px;
+  left: 0px;
+}
+
+/* Each list item, regardless of success, error, etc. */
+ol.mp_list li {
+  color: #666;
+  padding: 4px 4px 5px;
+  list-style: none;
+  display: block;
+  position: relative;
+  font-size: .75em;
+}
+
+ol.mp_list li + li {
+  border-top: 1px solid #C0C0C0;  
+}
+
+/* Each list item from a successful request. */
+ol.mp_list li.mp_item {
+
+}
+
+/* Each list item that's selectable. */
+ol.mp_list li.mp_selectable {
+  cursor: pointer;
+}
+
+/* Currently highlighted list item. */
+ol.mp_list li.mp_highlighted {
+  color: black;
+}
+ol.mp_list li.mp_highlighted:after {
+  position: absolute;
+  right: 0px;
+  top: 50%;
+  display: block;
+  content: '←';
+  line-height: 20px;
+  margin-top: -12px;
+  padding: 3px 2px 1px;
+  width: 10px;
+  text-align: right;
+}
+
+/* When a request is made that returns zero results. */
+ol.mp_list li.mp_no_results {
+
+}
+
+/* When a request is made that doesn't meet the 'minChars' length option. */
+ol.mp_list li.mp_min_chars {
+
+}
+
+/* When a request is made that fails during the ajax request. */
+ol.mp_list li.mp_error {
+
+}

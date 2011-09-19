@@ -31,8 +31,15 @@ m_info = c_blue
 m_success = c_cyan
 m_error	= c_orange
 
-#e
+#err
 	err
+
+p_medium = c_orange
+p_high   = c_red
+p_low = black
+
+#err
+	error
 
 // Logo
 
@@ -87,7 +94,6 @@ body
 			display inline-block
 			vertical-align middle
 			position relative
-			top -1px
 
 		#logo
 			logo c_base03
@@ -103,6 +109,7 @@ tick_size = 25px
 	border-radius 5px
 	width 100%
 	padding 0px
+	margin 10px 0
 .task
 	padding 5px
 	list-style none
@@ -126,13 +133,19 @@ tick_size = 25px
 		box-shadow inset 0px 2px 2px -2px c_base03
 		text-shadow 0px 1px 1px c_base03
 
-	.name
+	.info
 		line-height tick_size - 3px
 		padding 8px 0 5px
 		margin-left tick_size + 17px
+		.assignedTo
+			color grey
+			padding 0 .5ex
+			margin 0 .5ex
+			&:before
+				content '→ '
 
 	.archive
-		display block
+		display none
 		cursor pointer
 		float right
 		margin 5px
@@ -148,6 +161,8 @@ tick_size = 25px
 			background grey
 		.name
 			text-decoration line-through
+		.archive
+			display block
 		&:hover .archive
 			opacity 1
 			transition opacity fast ease 0
@@ -161,6 +176,112 @@ tick_size = 25px
 	&.priority-1
 		task c_base03 white
 	&.priority-2
-		task c_orange white
+		task p_medium white
 	&.priority-3
-		task m_alert c_base3
+		task p_high c_base3
+
+// Create task form
+
+.flex
+	display -webkit-box
+	display -moz-box
+	display box
+	&.f
+		width 100%
+	.placer
+		box-flex 1
+
+#creation
+	margin 10px
+	#left
+		box-flex 1
+	#middle
+		box-flex 0
+	#right
+		box-flex 0
+		box-align center
+
+// Fields
+
+f_main = silver
+f_hover = grey
+f_focus = c_magenta
+f_disabled = lighten(silver,20)
+f_locked = lighten(silver, 5)
+f_valid = c_blue
+
+.input
+	&.b
+		margin 5px
+		background white
+		border 1px solid grey
+		border-color darken(f_main,20) f_main f_main
+		font-size 20px
+		padding 0px // 0.2ex 0.3ex
+		border-radius 2px
+		transition border-color fast, color fast
+		&:hover
+			border-color darken(f_hover,20) f_hover f_hover
+		&.focus
+			border-color darken(f_focus,20) f_focus f_focus
+
+	input.h
+		padding 0px 5px
+		width 200px
+		box-sizing border-box
+		height 35px
+		display inline-block
+		vertical-align middle
+		box-shadow none
+		-webkit-appearance none
+		&,&:hover,&:focus,&:active
+			outline none
+			border 0px none
+			font 20px Helvetica, Arial, sans-serif
+		&.f
+			width 100%
+			// display block
+		&.auto
+			transition width fast
+			width 130px
+			&.medium
+				&.filled, &.focus
+					width 160px
+		&.lockable
+			&.valid
+				color f_locked
+	.icon
+		display inline-block
+		vertical-align middle
+		overflow hidden
+		transition color fast
+		//width 30px
+		line-height 30px
+		overflow visible
+		user-select none
+		cursor default
+		padding 4px 0 1px
+		&.padded
+			padding-left 1ex
+			padding-right 1ex
+		label[for]
+			cursor pointer
+
+	.validator
+		color f_disabled
+		&.valid
+			color darken(f_valid,5)
+
+	.priority
+		&.priority-1
+			color f_disabled
+		&.priority-2
+			color p_medium
+		&.priority-3
+			color p_high
+
+
+.separator
+	border-left 1px solid f_main
+	margin-left 2px
+	padding-left 5px
