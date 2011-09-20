@@ -44,7 +44,6 @@ update = (req, res) ->
 
 	complete = ->
 		if assigning or not req.task?
-			console.log 'passo di qui'
 			task.link assignedUser, 'assignedTo'
 		if closing
 			task.link actor, 'assignedTo'
@@ -111,7 +110,7 @@ _.extend exports,
 						if not err
 							@expose (err, object) =>
 								if not err
-									objects.push object
+									objects.push object unless @isArchived()
 									pass()
 								else
 									winston.error 'Error retrieving task properties'

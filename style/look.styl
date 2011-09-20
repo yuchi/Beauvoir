@@ -146,7 +146,7 @@ tick_size = 25px
 			span + span
 				&:before
 					content: ', '
-			.closed
+			.closed span
 				text-decoration line-through
 
 	.archive
@@ -156,9 +156,18 @@ tick_size = 25px
 		margin 5px
 		line-height tick_size - 3px
 		padding-top 3px
-		transition opacity fast ease slow
+		transition opacity fast ease fast
 		color c_base03
 		opacity 0
+
+	time
+		text-transform uppercase
+		font-size 0.6em
+		color c_base01
+		&:before
+			content '('
+		&:after
+			content ')'
 
 	&.completed
 		.toggle
@@ -252,6 +261,8 @@ f_valid = c_blue
 			&.medium
 				&.filled, &.focus
 					width 160px
+		&[type="date"]
+			width 14ex
 		&.lockable
 			&.valid
 				color f_locked
@@ -271,6 +282,12 @@ f_valid = c_blue
 			padding-right 1ex
 		label[for]
 			cursor pointer
+		&.delete
+			padding-top 1px
+			color c_red
+			margin-right 1ex
+			&:hover
+				color darken(c_red,10)
 
 	.validator
 		color f_disabled

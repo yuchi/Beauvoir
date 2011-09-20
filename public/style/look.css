@@ -116,7 +116,7 @@ body > h1 #logo .sq .in {
 .task .info .assignedTo span + span:before {
   content: ", ";
 }
-.task .info .assignedTo .closed {
+.task .info .assignedTo .closed span {
   text-decoration: line-through;
 }
 .task .archive {
@@ -126,12 +126,23 @@ body > h1 #logo .sq .in {
   margin: 5px;
   line-height: 22px;
   padding-top: 3px;
-  -webkit-transition: opacity 200ms ease 600ms;
-  -moz-transition: opacity 200ms ease 600ms;
-  transition: opacity 200ms ease 600ms;
+  -webkit-transition: opacity 200ms ease 200ms;
+  -moz-transition: opacity 200ms ease 200ms;
+  transition: opacity 200ms ease 200ms;
   color: #002b36;
   opacity: 0;
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+}
+.task time {
+  text-transform: uppercase;
+  font-size: 0.6em;
+  color: #586e75;
+}
+.task time:before {
+  content: "(";
+}
+.task time:after {
+  content: ")";
 }
 .task.completed .toggle {
   text-indent: 0px;
@@ -260,6 +271,9 @@ body > h1 #logo .sq .in {
 .input input.h.auto.medium.focus {
   width: 160px;
 }
+.input input.h[type="date"] {
+  width: 14ex;
+}
 .input input.h.lockable.valid {
   color: #cdcdcd;
 }
@@ -284,6 +298,14 @@ body > h1 #logo .sq .in {
 }
 .input .icon label[for] {
   cursor: pointer;
+}
+.input .icon.delete {
+  padding-top: 1px;
+  color: #dc322f;
+  margin-right: 1ex;
+}
+.input .icon.delete:hover {
+  color: #b9221f;
 }
 .input .validator {
   color: #f3f3f3;

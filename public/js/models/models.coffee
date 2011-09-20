@@ -19,6 +19,7 @@ Task = Backbone.Model.extend
 			priority: 1
 			closed: false
 			archived: false
+			minimum: 0
 		}
 
 	reverse:
@@ -31,7 +32,11 @@ Task = Backbone.Model.extend
 			attributes.name or= ''
 			this.set
 				priority: @foreseePriority()
-		@ 
+		@
+
+	closedByActor: () ->
+		mine = (_ @get 'assignedTo').select (a) -> +a.id == +App.user.id
+		!! (mine and mine[0] and mine[0].closed)
 
 	archive: (options) ->
 		@save {archived: true}, options
@@ -67,6 +72,7 @@ TaskView = Backbone.View.extend
 	model: Task
 
 	events:
+		'keyup'          : 'keyHandler'
 		'click .toggle'  : 'toggle'
 		'click .archive' : 'archive'
 	#	'dblclick .name' : 'open'
@@ -83,6 +89,9 @@ TaskView = Backbone.View.extend
 	render: ->
 		json = @model.toJSON()
 		json.status = if @model.get 'closed' then 'completed' else 'open'
+		if @model.get 'dueDate'
+			json.due = => (new Date @model.get 'dueDate').toLocaleDateString()
+
 		dust.render 'task', json, (err, out) =>
 			newel = $ out
 			$(@el).html newel.html()
@@ -92,12 +101,16 @@ TaskView = Backbone.View.extend
 		#$(@el).html @model.get 'name'
 		@
 
+	keyHandler: (event) ->
+		if event.which == 13
+			@toggle event
+
 	toggle: (event) ->
 
 		console.log _.clone @model.attributes
 
 		params = {}
-		if @model.get 'closed'
+		if @model.closedByActor()
 			params.opening = true
 		else
 			params.closing = true
@@ -140,6 +153,8 @@ AppView = Backbone.View.extend
 		Tasks.bind 'add', @addOne
 		Tasks.bind 'reset', @addAll
 
+		@user = window.user or {}
+
 		@creation = new Creation
 			app: @
 
@@ -150,9 +165,10 @@ AppView = Backbone.View.extend
 	addAll: (collection) ->
 		collection.each @addOne
 
-	create: (name, assignedTo, priority = 1) ->
+	create: (name, assignedTo, due, priority = 1) ->
 		console.log arguments
 		Tasks.create
+			dueDate: due
 			name: name
 			priority: priority
 			assignedTo: [assignedTo]
@@ -165,6 +181,7 @@ Creation = Backbone.View.extend
 		el: $ '#creation'
 		$name: $ '#name'
 		$assign: $ '#assign'
+		$due: $ '#due'
 
 	initialize: (options) ->
 		options or= {}
@@ -181,12 +198,20 @@ Creation = Backbone.View.extend
 
 	submit: (event) ->
 		event.preventDefault()
-		@empty => @app.create @getName(), @getAssignedTo()
+		name = @getName()
+		if name.length < 3
+			@$name.focus()
+		else
+			@empty => @app.create name, @getAssignedTo(), @getDue()
 		false
 
 	getAssignedTo: -> @$assign.data 'user'
 
 	getName: -> @$name.val()
+
+	getDue: ->
+		val = + new Date @$due.val()
+		if isNaN val then null else val
 
 # Build and expose
 # ----------------

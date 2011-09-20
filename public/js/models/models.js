@@ -14,7 +14,8 @@
         name: '',
         priority: 1,
         closed: false,
-        archived: false
+        archived: false,
+        minimum: 0
       };
     },
     reverse: {
@@ -33,6 +34,13 @@
         });
       }
       return this;
+    },
+    closedByActor: function() {
+      var mine;
+      mine = (_(this.get('assignedTo'))).select(function(a) {
+        return +a.id === +App.user.id;
+      });
+      return !!(mine && mine[0] && mine[0].closed);
     },
     archive: function(options) {
       return this.save({
@@ -73,6 +81,7 @@
     tagName: 'li',
     model: Task,
     events: {
+      'keyup': 'keyHandler',
       'click .toggle': 'toggle',
       'click .archive': 'archive'
     },
@@ -88,6 +97,11 @@
       var json;
       json = this.model.toJSON();
       json.status = this.model.get('closed') ? 'completed' : 'open';
+      if (this.model.get('dueDate')) {
+        json.due = __bind(function() {
+          return (new Date(this.model.get('dueDate'))).toLocaleDateString();
+        }, this);
+      }
       dust.render('task', json, __bind(function(err, out) {
         var newel;
         newel = $(out);
@@ -99,11 +113,16 @@
       }, this));
       return this;
     },
+    keyHandler: function(event) {
+      if (event.which === 13) {
+        return this.toggle(event);
+      }
+    },
     toggle: function(event) {
       var params;
       console.log(_.clone(this.model.attributes));
       params = {};
-      if (this.model.get('closed')) {
+      if (this.model.closedByActor()) {
         params.opening = true;
       } else {
         params.closing = true;
@@ -148,6 +167,7 @@
       _.bindAll(this, 'addAll', 'addOne');
       Tasks.bind('add', this.addOne);
       Tasks.bind('reset', this.addAll);
+      this.user = window.user || {};
       return this.creation = new Creation({
         app: this
       });
@@ -162,12 +182,13 @@
     addAll: function(collection) {
       return collection.each(this.addOne);
     },
-    create: function(name, assignedTo, priority) {
+    create: function(name, assignedTo, due, priority) {
       if (priority == null) {
         priority = 1;
       }
       console.log(arguments);
       return Tasks.create({
+        dueDate: due,
         name: name,
         priority: priority,
         assignedTo: [assignedTo]
@@ -182,7 +203,8 @@
       return {
         el: $('#creation'),
         $name: $('#name'),
-        $assign: $('#assign')
+        $assign: $('#assign'),
+        $due: $('#due')
       };
     },
     initialize: function(options) {
@@ -203,10 +225,16 @@
       return this;
     },
     submit: function(event) {
+      var name;
       event.preventDefault();
-      this.empty(__bind(function() {
-        return this.app.create(this.getName(), this.getAssignedTo());
-      }, this));
+      name = this.getName();
+      if (name.length < 3) {
+        this.$name.focus();
+      } else {
+        this.empty(__bind(function() {
+          return this.app.create(name, this.getAssignedTo(), this.getDue());
+        }, this));
+      }
       return false;
     },
     getAssignedTo: function() {
@@ -214,6 +242,15 @@
     },
     getName: function() {
       return this.$name.val();
+    },
+    getDue: function() {
+      var val;
+      val = +new Date(this.$due.val());
+      if (isNaN(val)) {
+        return null;
+      } else {
+        return val;
+      }
     }
   });
   $(function() {

@@ -125,6 +125,15 @@ app.resource 'tasks', require './lib/resources/tasks'
 
 app.resource 'users', require './lib/resources/users'
 
+
+##
+# Dynamic data
+##
+
+
+app.get '/dynamic/user.js', auth.restrict(), auth.load, (req, res) -> res.send "window.user=#{JSON.stringify req.user.expose()};"
+
+
 ###
 # Opening app
 ###

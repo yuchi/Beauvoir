@@ -89,6 +89,9 @@ Task = nohm.model 'Task',
 			type: 'boolean'
 			index: true
 			defaultValue: false
+		dueDate:
+			type: 'timestamp'
+			index: true
 		createDate:
 			type: 'timestamp'
 			validations: ['notEmpty']

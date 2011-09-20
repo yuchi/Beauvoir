@@ -1,7 +1,7 @@
 (function() {
   var e;
   $(function() {
-    var assign, name, priority;
+    var assign, due, name, priority, resetters;
     ($('.input')).live('focusin', function(event) {
       var self;
       self = $(event.target);
@@ -39,7 +39,7 @@
     });
     name = $('#name');
     priority = $('#priority');
-    return name.bind('change keypress keyup paste', function() {
+    name.bind('change keypress keyup paste', function() {
       var foreseen, i, self, _i, _len, _ref, _results;
       self = $(this);
       foreseen = Task.prototype.foreseePriority(self.val());
@@ -59,6 +59,21 @@
         _results.push(priority.toggleClass('priority-' + i, i === foreseen));
       }
       return _results;
+    });
+    due = $('#due');
+    due.bind('blur change focus', _.throttle((function(event) {
+      var dueDate;
+      dueDate = new Date(due.val());
+      return due.siblings('.validator').andSelf().toggleClass('valid', !isNaN(+dueDate));
+    }), 100));
+    resetters = $('.reset');
+    return resetters.bind('click keyup', function(event) {
+      var input;
+      if (event.type === 'click' || +event.which === +13) {
+        input = $(event.target).siblings('input');
+        input.val('');
+        return input.focus();
+      }
     });
   });
   e = function(string) {

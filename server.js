@@ -108,6 +108,9 @@
   */
   app.resource('tasks', require('./lib/resources/tasks'));
   app.resource('users', require('./lib/resources/users'));
+  app.get('/dynamic/user.js', auth.restrict(), auth.load, function(req, res) {
+    return res.send("window.user=" + (JSON.stringify(req.user.expose())) + ";");
+  });
   /*
   # Opening app
   */

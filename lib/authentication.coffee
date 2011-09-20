@@ -131,11 +131,9 @@ verify = (username, password, properties, user, fn) ->
 	###
 
 load = exports.load = (req, res, next) ->
-	id = req.session.userId
-	user = new models.User id
-	user.load id, (err, properties) ->
+	models.User.load req.session.userId, (err, properties) ->
 		if err
 			res.send 500
 		else
-			req.user = user
+			req.user = @
 			next()

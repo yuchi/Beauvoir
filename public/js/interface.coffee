@@ -40,6 +40,19 @@ $ ->
 		for i in [1,2,3]
 			priority.toggleClass 'priority-'+i, i == foreseen
 
+	due = $ '#due'
+	due.bind 'blur change focus', _.throttle ((event) ->
+			dueDate = new Date due.val()
+			due.siblings('.validator').andSelf().toggleClass 'valid', !isNaN +dueDate
+		), 100
+
+	resetters = $ '.reset'
+	resetters.bind 'click keyup', (event) ->
+		if event.type == 'click' or +event.which == +13
+			input = $(event.target).siblings 'input'
+			input.val ''
+			input.focus()
+
 e = (string='') ->
     string.replace(/&(?!\w+;|#\d+;|#x[\da-f]+;)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;')
 
