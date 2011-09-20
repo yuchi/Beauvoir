@@ -303,9 +303,14 @@ body > h1 #logo .sq .in {
   padding-top: 1px;
   color: #dc322f;
   margin-right: 1ex;
+  cursor: pointer;
 }
 .input .icon.delete:hover {
   color: #b9221f;
+}
+.input .icon.due {
+  padding-top: 2px;
+  padding-bottom: 3px;
 }
 .input .validator {
   color: #f3f3f3;
@@ -321,6 +326,32 @@ body > h1 #logo .sq .in {
 }
 .input .priority.priority-3 {
   color: #dc322f;
+}
+.input .action {
+  appearance: none;
+  padding: 0px 2ex;
+  margin: 0px;
+  line-height: 35px;
+  border: none;
+  height: 35px;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+  overflow: hidden;
+  -webkit-transition: color 200ms;
+  -moz-transition: color 200ms;
+  transition: color 200ms;
+  text-shadow: 0px 1px 0px #fff;
+  color: #268bd2;
+}
+.input .action:active {
+  color: #2aa198;
+}
+.input .action:focus {
+  color: #000;
+}
+.input .action:hover {
+  color: #000;
 }
 .separator {
   border-left: 1px solid #c0c0c0;

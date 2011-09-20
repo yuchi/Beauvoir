@@ -286,8 +286,12 @@ f_valid = c_blue
 			padding-top 1px
 			color c_red
 			margin-right 1ex
+			cursor pointer
 			&:hover
 				color darken(c_red,10)
+		&.due
+			padding-top 2px
+			padding-bottom 3px
 
 	.validator
 		color f_disabled
@@ -302,6 +306,26 @@ f_valid = c_blue
 		&.priority-3
 			color p_high
 
+	.action
+		appearance none
+		padding 0px 2ex
+		margin 0px
+		line-height 35px
+		border none
+		height 35px
+		background none
+		font-size 20px
+		cursor pointer
+		overflow hidden
+		transition color fast
+		text-shadow 0px 1px 0px white
+		color c_blue
+		&:active
+			color c_cyan
+		&:focus
+			color black
+		&:hover
+			color black
 
 .separator
 	border-left 1px solid f_main

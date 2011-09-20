@@ -25,11 +25,11 @@ html
 						input#assign.h.auto.medium.lockable(type="text",placeholder="Assign (you)",autocomplete='off')
 						.icon.delete.reset#reset-due(tabindex=0) &times;
 					.separator
-						.validator.icon: label(for='due',style="position:relative;top:2px;") &#x23f0;
-						input#due.h.medium.lockable(type="date",placeholder="Due Y/M/D",autocomplete='off')
+						.validator.icon.due: label(for='due',style="position:relative;top:2px;") due
+						input#due.h.medium.lockable(type="date",placeholder="Y/M/D",autocomplete='off')
 						.icon.delete.reset#reset-due(tabindex=0) &times;
 					.separator
-						button(type='submit') Create
+						button.action.create(type='submit') Create
 		ul#tasks.tasks
 
 		.hide

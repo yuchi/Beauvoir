@@ -217,6 +217,7 @@
       }, 200, __bind(function() {
         callback();
         this.$name.val('');
+        this.$due.val('');
         return this.$assign.marcoPolo('change', '');
       }, this)).animate({
         opacity: 1
