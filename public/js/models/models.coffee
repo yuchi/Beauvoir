@@ -19,7 +19,6 @@ Task = Backbone.Model.extend
 			priority: 1
 			closed: false
 			archived: false
-			minimum: 0
 		}
 
 	reverse:

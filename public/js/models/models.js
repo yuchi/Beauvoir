@@ -14,8 +14,7 @@
         name: '',
         priority: 1,
         closed: false,
-        archived: false,
-        minimum: 0
+        archived: false
       };
     },
     reverse: {
