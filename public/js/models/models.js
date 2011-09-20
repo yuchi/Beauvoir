@@ -216,8 +216,8 @@
         opacity: 0
       }, 200, __bind(function() {
         callback();
-        this.$name.val('');
-        this.$due.val('');
+        (this.$name.val('')).change();
+        (this.$due.val('')).change();
         return this.$assign.marcoPolo('change', '');
       }, this)).animate({
         opacity: 1

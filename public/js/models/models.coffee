@@ -190,8 +190,8 @@ Creation = Backbone.View.extend
 	empty: (callback) ->
 		($ @el).animate( {opacity:0}, 200, =>
 			callback()
-			@$name.val ''
-			@$due.val ''
+			(@$name.val '').change()
+			(@$due.val '').change()
 			@$assign.marcoPolo 'change', ''
 		).animate {opacity:1}, 200
 		@

@@ -39,7 +39,7 @@
     });
     name = $('#name');
     priority = $('#priority');
-    name.bind('change keypress keyup paste', function() {
+    name.bind('change keypress keyup paste focus blur', function() {
       var foreseen, i, self, _i, _len, _ref, _results;
       self = $(this);
       foreseen = Task.prototype.foreseePriority(self.val());

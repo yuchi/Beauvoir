@@ -28,7 +28,7 @@ $ ->
 
 	name = $ '#name'
 	priority = $ '#priority'
-	name.bind 'change keypress keyup paste', ->
+	name.bind 'change keypress keyup paste focus blur', ->
 		self = $ this
 		foreseen = Task::foreseePriority self.val()
 		if foreseen == 1
