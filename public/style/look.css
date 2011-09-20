@@ -2,38 +2,38 @@ body {
   background: #fff;
   font-family: sans-serif;
   margin: 0;
-  padding: 0;
+  padding: 0 0 20px;
 }
-body > h1 {
-  margin: 10px;
-  padding: 0px;
+body h1#hat {
+  margin: 0px;
+  padding: 10px;
   color: #002b36;
 }
-body > h1 img {
+body h1#hat img {
   width: 55px;
   height: 55px;
 }
-body > h1 img,
-body > h1 #logo {
+body h1#hat img,
+body h1#hat #logo {
   display: inline-block;
   vertical-align: middle;
   position: relative;
 }
-body > h1 #logo .in {
+body h1#hat #logo .in {
   position: absolute;
   left: 0px;
   background: #002b36;
 }
-body > h1 #logo .rc,
-body > h1 #logo .sq {
+body h1#hat #logo .rc,
+body h1#hat #logo .sq {
   overflow: hidden;
   position: relative;
   width: 34px;
 }
-body > h1 #logo .rc {
+body h1#hat #logo .rc {
   height: 21px;
 }
-body > h1 #logo .rc .in {
+body h1#hat #logo .rc .in {
   bottom: 0px;
   width: 38px;
   height: 38px;
@@ -45,10 +45,10 @@ body > h1 #logo .rc .in {
   -moz-border-radius-bottomright: 38px;
   border-bottom-right-radius: 38px;
 }
-body > h1 #logo .sq {
+body h1#hat #logo .sq {
   height: 34px;
 }
-body > h1 #logo .sq .in {
+body h1#hat #logo .sq .in {
   top: 0px;
   width: 34px;
   height: 34px;
@@ -59,6 +59,29 @@ body > h1 #logo .sq .in {
   -webkit-border-top-right-radius: 34px;
   -moz-border-radius-topright: 34px;
   border-top-right-radius: 34px;
+}
+html,
+body {
+  height: 100%;
+  margin: 0px;
+  padding: 0px;
+}
+#wrap {
+  min-height: 100%;
+  position: relative;
+}
+#footer-limiter {
+  padding: 0 0 110px;
+}
+footer {
+  margin: -70px 0 0;
+  width: 100%;
+  left: 0px;
+  text-align: center;
+  color: #586e75;
+}
+footer a {
+  color: #002b36;
 }
 .hide {
   display: none;

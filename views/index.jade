@@ -5,32 +5,62 @@ html
 		meta(name="viewport",content="width = device-height")
 		include includes/scripts
 	body
-		h1
-			img(src=user.getGravatar())
-			#logo
-				include includes/logo
-			| eauvoir
+		#wrap
 
-		form#creation.input.b(action="/lol")
-			.flex.f
-				#left.flex
-					.placer
-						input#name.h.f(type="text",placeholder="Create new task",autocomplete='off')
-				#middle.flex
-					.attributes
-						#priority.priority.icon.padded
-				#right.flex
-					.separator.mp_container.mp_full
-						.validator.icon: label(for='assign') @
-						input#assign.h.auto.medium.lockable(type="text",placeholder="Assign (you)",autocomplete='off')
-						.icon.delete.reset#reset-due(tabindex=0) &times;
-					.separator
-						.validator.icon.due: label(for='due',style="position:relative;top:2px;") due
-						input#due.h.medium.lockable(type="date",placeholder="Y/M/D",autocomplete='off')
-						.icon.delete.reset#reset-due(tabindex=0) &times;
-					.separator
-						button.action.create(type='submit') Create
-		ul#tasks.tasks
+			h1#hat
+				img(src=user.getGravatar())
+				#logo
+					include includes/logo
+				| eauvoir
+
+			form#creation.input.b(action="/lol")
+				.flex.f
+					#left.flex
+						.placer
+							input#name.h.f(type="text",placeholder="Create new task",autocomplete='off')
+					#middle.flex
+						.attributes
+							#priority.priority.icon.padded
+					#right.flex
+						.separator.mp_container.mp_full
+							.validator.icon: label(for='assign') @
+							input#assign.h.auto.medium.lockable(type="text",placeholder="Assign (you)",autocomplete='off')
+							.icon.delete.reset#reset-due(tabindex=0) &times;
+						.separator
+							.validator.icon.due: label(for='due',style="position:relative;top:2px;") due
+							input#due.h.medium.lockable(type="date",placeholder="Y/M/D",autocomplete='off')
+							.icon.delete.reset#reset-due(tabindex=0) &times;
+						.separator
+							button.action.create(type='submit') Create
+			ul#tasks.tasks
+
+			#footer-limiter
+
+		footer
+			div Powered by <a href="https://github.com/yuchi/Beauvoir">Beauvoir</a> 
+			div
+				small
+					| uses 
+					a(href="http://nodejs.org") Node.js
+					| ,
+					a(href="http://redis.io") Redis
+					| , 
+					a(href="http://maritz.github.com/nohm/") Nohm
+					| , 
+					a(href="http://expressjs.com/") Express
+					| , 
+					a(href="http://learnboost.github.com/stylus/") Stylus
+					| ,
+					a(href="http://jade-lang.com") Jade
+					|  and others
+			div
+				small
+					| interface provided with 
+					a(href="http://jquery.com") jQuery
+					| ,
+					a(href="https://github.com/jstayton/jquery-marcopolo") Marco Polo
+					| ,
+					a(href="http://ethanschoonover.com/solarized") Solarized
 
 		.hide
 			//- Templates
