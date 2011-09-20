@@ -79,6 +79,7 @@ footer {
   left: 0px;
   text-align: center;
   color: #586e75;
+  position: relative;
 }
 footer a {
   color: #002b36;
