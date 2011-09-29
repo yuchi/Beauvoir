@@ -211,7 +211,7 @@ footer a {
   display: -moz-box;
   display: box;
 }
-.flex.f {
+.flex.f-full {
   width: 100%;
 }
 .flex .placer {
@@ -219,26 +219,27 @@ footer a {
   -moz-box-flex: 1;
   box-flex: 1;
 }
-#creation {
-  margin: 10px;
-}
-#creation #left {
+.flex.f-1 {
   -webkit-box-flex: 1;
   -moz-box-flex: 1;
   box-flex: 1;
 }
-#creation #middle {
+.flex.f-0 {
   -webkit-box-flex: 0;
   -moz-box-flex: 0;
   box-flex: 0;
 }
-#creation #right {
-  -webkit-box-flex: 0;
-  -moz-box-flex: 0;
-  box-flex: 0;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  box-align: center;
+#creation {
+  margin: 10px;
+/*
+	#left
+		box-flex 1
+	#middle
+		box-flex 0
+	#right
+		box-flex 0
+		box-align center
+	*/
 }
 .input.b {
   margin: 5px;
@@ -294,6 +295,9 @@ footer a {
 .input input.h.auto.medium.filled,
 .input input.h.auto.medium.focus {
   width: 160px;
+}
+.input input.h.small {
+  width: 120px;
 }
 .input input.h[type="date"] {
   width: 14ex;
@@ -381,4 +385,26 @@ footer a {
   border-left: 1px solid #c0c0c0;
   margin-left: 2px;
   padding-left: 5px;
+}
+@media screen and (max-width: 1000px) {
+  #creation-flexer {
+    display: block;
+  }
+  #creation-flexer > .flex + .flex {
+    border-top: 1px solid #c0c0c0;
+  }
+  #creation-right > .separator:first-child {
+    border: none;
+  }
+}
+@media screen and (max-width: 520px) {
+  #creation-right {
+    display: block;
+  }
+  #creation-right > .separator {
+    border: none;
+  }
+  #creation-right > .separator .icon.delete {
+    float: right;
+  }
 }

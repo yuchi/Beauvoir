@@ -221,13 +221,19 @@ tick_size = 25px
 	display -webkit-box
 	display -moz-box
 	display box
-	&.f
+	&.f-full
 		width 100%
 	.placer
 		box-flex 1
 
+	&.f-1
+		box-flex 1
+	&.f-0
+		box-flex 0
+
 #creation
 	margin 10px
+	/*
 	#left
 		box-flex 1
 	#middle
@@ -235,6 +241,7 @@ tick_size = 25px
 	#right
 		box-flex 0
 		box-align center
+	*/
 
 // Fields
 
@@ -282,6 +289,8 @@ f_valid = c_blue
 			&.medium
 				&.filled, &.focus
 					width 160px
+		&.small
+			width 120px
 		&[type="date"]
 			width 14ex
 		&.lockable
@@ -352,3 +361,19 @@ f_valid = c_blue
 	border-left 1px solid f_main
 	margin-left 2px
 	padding-left 5px
+
+@media screen and (max-width: 1000px)
+	#creation-flexer
+		display block
+		> .flex + .flex
+			border-top 1px solid f_main
+	#creation-right > .separator:first-child
+		border none
+
+@media screen and (max-width: 520px)
+	#creation-right
+		display block
+		> .separator
+			border none
+			.icon.delete
+				float right

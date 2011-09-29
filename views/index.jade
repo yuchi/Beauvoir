@@ -14,17 +14,18 @@ html
 				| eauvoir
 
 			form#creation.input.b(action="/lol")
-				.flex.f
-					#left.flex
-						.placer
-							input#name.h.f(type="text",placeholder="Create new task",autocomplete='off')
-					#middle.flex
-						.attributes
-							#priority.priority.icon.padded
-					#right.flex
+				#creation-flexer.flex.f-full
+					#creation-left.wrap.flex.f-1
+						.flex.f-1.f-full
+							.placer
+								input#name.h.f(type="text",placeholder="Create new task",autocomplete='off')
+						.flex.f-0
+							.attributes
+								#priority.priority.icon.padded
+					#creation-right.wrap.flex.f-0
 						.separator.mp_container.mp_full
 							.validator.icon: label(for='assign') @
-							input#assign.h.auto.medium.lockable(type="text",placeholder="Assign (you)",autocomplete='off')
+							input#assign.h.small.lockable(type="text",placeholder="Assign (you)",autocomplete='off')
 							.icon.delete.reset#reset-due(tabindex=0) &times;
 						.separator
 							.validator.icon.due: label(for='due',style="position:relative;top:2px;") due
@@ -32,6 +33,7 @@ html
 							.icon.delete.reset#reset-due(tabindex=0) &times;
 						.separator
 							button.action.create(type='submit') Create
+
 			ul#tasks.tasks
 
 			#footer-limiter
@@ -52,7 +54,7 @@ html
 					a(href="http://learnboost.github.com/stylus/") Stylus
 					| ,
 					a(href="http://jade-lang.com") Jade
-					|  and others
+					|	and others
 			div
 				small
 					| interface provided with 
