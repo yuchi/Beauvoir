@@ -45,6 +45,7 @@ $ ->
 			dueDate = new Date due.val()
 			due.siblings('.validator').andSelf().toggleClass 'valid', !isNaN +dueDate
 		), 100
+	due.datepicker();
 
 	resetters = $ '.reset'
 	resetters.bind 'click keyup', (event) ->
@@ -53,7 +54,12 @@ $ ->
 			input.val ''
 			input.focus()
 
-e = (string='') ->
+	# Datepicker is not as cool as Marcopolo, so it's appended as an absolutely positioned div
+	# directly to the document. When the page resizes the input moves... but not the Darepicker.
+	($ window).resize ->
+		due.datepicker 'hide'
+
+e = escape = (string='') ->
     string.replace(/&(?!\w+;|#\d+;|#x[\da-f]+;)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;')
 
 	###

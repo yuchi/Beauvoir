@@ -108,7 +108,7 @@ app.post '/signup', (req, res) ->
 			winston.info "User '#{req.body.username}' successfully created."
 			res.redirect 'home'
 
-app.get '/public/*.(js|css)', (req, res) ->
+app.get '/public/*.(js|css|png)', (req, res) ->
 	res.sendfile './' + req.url
 
 app.get '/', auth.restrict(), auth.load, (req, res) ->

@@ -1,5 +1,5 @@
 (function() {
-  var e;
+  var e, escape;
   $(function() {
     var assign, due, name, priority, resetters;
     ($('.input')).live('focusin', function(event) {
@@ -66,8 +66,9 @@
       dueDate = new Date(due.val());
       return due.siblings('.validator').andSelf().toggleClass('valid', !isNaN(+dueDate));
     }), 100));
+    due.datepicker();
     resetters = $('.reset');
-    return resetters.bind('click keyup', function(event) {
+    resetters.bind('click keyup', function(event) {
       var input;
       if (event.type === 'click' || +event.which === +13) {
         input = $(event.target).siblings('input');
@@ -75,8 +76,11 @@
         return input.focus();
       }
     });
+    return ($(window)).resize(function() {
+      return due.datepicker('hide');
+    });
   });
-  e = function(string) {
+  e = escape = function(string) {
     if (string == null) {
       string = '';
     }

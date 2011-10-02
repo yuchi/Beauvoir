@@ -299,7 +299,7 @@ footer a {
 .input input.h.small {
   width: 120px;
 }
-.input input.h[type="date"] {
+.input input.h.date {
   width: 14ex;
 }
 .input input.h.lockable.valid {
@@ -341,7 +341,7 @@ footer a {
   padding-bottom: 3px;
 }
 .input .validator {
-  color: #f3f3f3;
+  color: #c0c0c0;
 }
 .input .validator.valid {
   color: #227dbc;
@@ -407,4 +407,20 @@ footer a {
   #creation-right > .separator .icon.delete {
     float: right;
   }
+}
+.ui-widget {
+  font-size: 12px !important;
+}
+.ui-datepicker {
+  margin: 5px 0 0;
+}
+.ui-datepicker td {
+  width: 14.5%;
+}
+.ui-datepicker td .ui-state-default {
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+  text-align: center;
+  border: none;
 }

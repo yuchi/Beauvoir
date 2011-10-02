@@ -291,7 +291,7 @@ f_valid = c_blue
 					width 160px
 		&.small
 			width 120px
-		&[type="date"]
+		&.date
 			width 14ex
 		&.lockable
 			&.valid
@@ -324,7 +324,7 @@ f_valid = c_blue
 			padding-bottom 3px
 
 	.validator
-		color f_disabled
+		color f_main
 		&.valid
 			color darken(f_valid,5)
 
@@ -377,3 +377,18 @@ f_valid = c_blue
 			border none
 			.icon.delete
 				float right
+
+
+// Helping jQuery UI looking pretty
+.ui-widget
+	font-size 12px !important
+.ui-datepicker
+	margin 5px 0 0
+	td
+		width 14.5%
+		.ui-state-default
+			border-radius 2px
+			text-align center
+			border none
+
+

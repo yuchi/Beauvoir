@@ -95,7 +95,7 @@
       }
     });
   });
-  app.get('/public/*.(js|css)', function(req, res) {
+  app.get('/public/*.(js|css|png)', function(req, res) {
     return res.sendfile('./' + req.url);
   });
   app.get('/', auth.restrict(), auth.load, function(req, res) {
