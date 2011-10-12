@@ -1,5 +1,5 @@
 (function() {
-  var RedisStore, app, auth, config_file, dev_port, express, fs, http, jade, path, server_port, signInUser, stylus, version, winston, _;
+  var RedisStore, app, auth, config_file, dev_port, express, fs, http, jade, path, resources, server_port, signInUser, stylus, version, winston, _, __l;
   version = '0.1.0';
   dev_port = 3000;
   server_port = 80;
@@ -41,10 +41,18 @@
     secret: 'Secretly I am an unicorn'
   }));
   /*
+  # Middlewares and helpers
+  */
+  app.use(auth.loadActor);
+  app.dynamicHelpers({
+    actor: auth.actorHelper,
+    context: auth.contextHelper,
+    availableContexts: auth.availableContextsHelper
+  });
+  /*
   # Routes
   */
   app.get('/logout', function(req, res) {
-    console.dir(req.session);
     winston.info('Session destroyed');
     return req.session.destroy(function() {
       return res.redirect('home');
@@ -52,7 +60,6 @@
   });
   signInUser = function(req, res) {
     return auth.authenticate(req.body.username, req.body.password, function(err, user) {
-      console.dir(user);
       if (err) {
         winston.error('Error: ' + err);
       }
@@ -98,18 +105,29 @@
   app.get('/public/*.(js|css|png)', function(req, res) {
     return res.sendfile('./' + req.url);
   });
-  app.get('/', auth.restrict(), auth.load, function(req, res) {
-    return res.render('index', {
-      user: req.user
-    });
-  });
   /*
   # Resources
   */
-  app.resource('tasks', require('./lib/resources/tasks'));
-  app.resource('users', require('./lib/resources/users'));
+  resources = {
+    tasks: app.resource('tasks', require('./lib/resources/tasks')),
+    users: app.resource('users', require('./lib/resources/users'))
+  };
+  resources.users.add(resources.tasks);
   app.get('/dynamic/user.js', auth.restrict(), auth.load, function(req, res) {
-    return res.send("window.user=" + (JSON.stringify(req.user.expose())) + ";");
+    return res.send("window.user=" + (JSON.stringify(req._user.expose())) + ";");
+  });
+  /*
+  # The base route
+  */
+  __l = function(req, res, next) {
+    console.dir(req.context);
+    return next();
+  };
+  app.get('/', auth.restrict(), auth.loadAvailableContexts, function(req, res) {
+    return res.render('index');
+  });
+  app.get('/~:context', auth.restrict(), auth.loadAvailableContexts, function(req, res) {
+    return res.render('index');
   });
   /*
   # Opening app

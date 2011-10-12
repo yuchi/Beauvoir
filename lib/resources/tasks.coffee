@@ -76,6 +76,7 @@ update = (req, res) ->
 	actor = new models.User req.session.userId
 
 	if assignedTo
+		console.dir assignedTo
 		# assignedToId = assignedTo.id or assignedTo
 		assignedUser = new models.User (assignedTo.id or assignedTo)
 		assignedUser.load (assignedTo.id or assignedTo), (err, props) ->
@@ -85,6 +86,7 @@ update = (req, res) ->
 						complete()
 					else
 						winston.error 'Error retrieving users'
+						console.dir err
 			else
 				winston.error 'Error retrieving user \#'+(assignedTo.id or assignedTo)
 	else
@@ -99,7 +101,7 @@ _.extend exports,
 
 	index: (req, res) ->
 		objects = []
-		models.Task.find (err, ids) ->
+		complete = (err, ids) ->
 			if not err
 				(pass = _.after ids.length+1, ->
 					winston.info "Tasks list successfully retrieved"
@@ -121,6 +123,12 @@ _.extend exports,
 			else
 				winston.error "Task list could not be retrieved"
 				res.send 500
+
+		if req.user?
+			models.Task.find { context: req.user.id }, complete
+		else
+			models.Task.find complete
+
 
 	show: (req, res) ->
 		req.task.expose (err, json) ->

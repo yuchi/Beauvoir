@@ -1,5 +1,6 @@
 
 root = this
+App = null
 
 # Setting up templates
 # --------------------
@@ -14,12 +15,11 @@ $ ->
 
 Task = Backbone.Model.extend
 	defaults: ->
-		{
-			name: ''
-			priority: 1
-			closed: false
-			archived: false
-		}
+		name: ''
+		priority: 1
+		closed: false
+		archived: false
+		context: App.context.id
 
 	reverse:
 		'open' : 'completed'
@@ -34,7 +34,7 @@ Task = Backbone.Model.extend
 		@
 
 	closedByActor: () ->
-		mine = (_ @get 'assignedTo').select (a) -> +a.id == +App.user.id
+		mine = (_ @get 'assignedTo').select (a) -> a.id == App.actor.id
 		!! (mine and mine[0] and mine[0].closed)
 
 	archive: (options) ->
@@ -50,7 +50,8 @@ Task = Backbone.Model.extend
 
 TaskList = Backbone.Collection.extend
 	model: Task
-	url: '/tasks'
+
+	url: -> "/users/#{App.context.id}/tasks"
 
 	initialize: (options) ->
 		options or= {}
@@ -59,6 +60,11 @@ TaskList = Backbone.Collection.extend
 	done: ->
 		@filter (todo) ->
 			todo.get('status') == 'completed'
+
+	__flush: ->
+		(execute = =>
+			@first()?.destroy
+				success: execute )()
 
 Tasks = new TaskList
 
@@ -152,7 +158,10 @@ AppView = Backbone.View.extend
 		Tasks.bind 'add', @addOne
 		Tasks.bind 'reset', @addAll
 
-		@user = window.user or {}
+		@actor = window.actor
+		@context = window.context or @actor
+
+		throw "Environment not initialized" unless @actor? and @context?
 
 		@creation = new Creation
 			app: @
@@ -218,8 +227,7 @@ Creation = Backbone.View.extend
 
 $ ->
 	App = root.App = new AppView
-
-Tasks.fetch()
+	Tasks.fetch()
 
 _.extend root,
 	Tasks: Tasks

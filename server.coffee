@@ -59,19 +59,27 @@ app.use express.session
 
 
 ###
+# Middlewares and helpers
+###
+
+app.use auth.loadActor
+app.dynamicHelpers
+	actor: auth.actorHelper
+	context: auth.contextHelper
+	availableContexts: auth.availableContextsHelper
+
+###
 # Routes
 ###
 
 
 app.get '/logout', (req, res) ->
-	console.dir req.session
 	winston.info 'Session destroyed'
 	req.session.destroy ->
 		res.redirect 'home'
 
 signInUser = (req, res) ->
 	auth.authenticate req.body.username, req.body.password, (err, user) ->
-		console.dir user
 		winston.error 'Error: '+err if err
 
 		if user
@@ -111,19 +119,19 @@ app.post '/signup', (req, res) ->
 app.get '/public/*.(js|css|png)', (req, res) ->
 	res.sendfile './' + req.url
 
-app.get '/', auth.restrict(), auth.load, (req, res) ->
-	res.render 'index',
-		user: req.user
-
 
 ###
 # Resources
 ###
 
 
-app.resource 'tasks', require './lib/resources/tasks'
+resources =
+	tasks: app.resource 'tasks', require './lib/resources/tasks'
+	users: app.resource 'users', require './lib/resources/users'
+	#organizations: app.resource 'organizations', require './lib/resources/users'
 
-app.resource 'users', require './lib/resources/users'
+resources.users.add resources.tasks
+#resources.organizations.add resources.tasks
 
 
 ##
@@ -131,7 +139,21 @@ app.resource 'users', require './lib/resources/users'
 ##
 
 
-app.get '/dynamic/user.js', auth.restrict(), auth.load, (req, res) -> res.send "window.user=#{JSON.stringify req.user.expose()};"
+app.get '/dynamic/user.js', auth.restrict(), auth.load, (req, res) -> res.send "window.user=#{JSON.stringify req._user.expose()};"
+
+
+###
+# The base route
+###
+
+
+__l = (req, res, next) ->
+	console.dir req.context
+	next()
+
+# (req, res) -> res.render 'index'
+app.get '/', auth.restrict(), auth.loadAvailableContexts, (req, res) -> res.render 'index'
+app.get '/~:context', auth.restrict(), auth.loadAvailableContexts, (req, res) -> res.render 'index'
 
 
 ###

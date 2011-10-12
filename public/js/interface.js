@@ -1,7 +1,14 @@
 (function() {
   var e, escape;
   $(function() {
-    var assign, due, name, priority, resetters;
+    var assign, contextWrapper, due, name, priority, resetters;
+    ($('html')).addClass('loaded');
+    contextWrapper = $('#context');
+    (contextWrapper.find('#actual')).bind('click keyup', function(e) {
+      if (e.type === 'click' || +event.which === +13) {
+        return (contextWrapper.find('#contexts-list')).toggleClass('opened');
+      }
+    });
     ($('.input')).live('focusin', function(event) {
       var self;
       self = $(event.target);

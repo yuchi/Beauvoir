@@ -1,39 +1,180 @@
+#context {
+  float: right;
+  margin: 10px 20px;
+  padding: 0px;
+  position: relative;
+}
+#context #actual {
+  cursor: default;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  line-height: 30px;
+  font-size: 20px;
+  padding: 0 10px;
+  border: 1px solid #f3f3f3;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
+html.loaded #context #actual {
+  -webkit-transition: border 1s, background 1s;
+  -moz-transition: border 1s, background 1s;
+  transition: border 1s, background 1s;
+}
+#context #actual:hover,
+#context #actual:focus {
+  border-color: #c0c0c0;
+  background: #f3f3f3;
+}
+#context #actual img.avatar {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+  position: relative;
+  top: -1px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
+#context #actual .separator {
+  border-left: 1px solid #c0c0c0;
+}
+#context #actual .action {
+  cursor: pointer;
+}
+#context #actual .action .to-off {
+  display: none;
+}
+#context #actual .action .to-on {
+  display: inline;
+}
+#context.opened #actual .action .to-on {
+  display: none;
+}
+#context.opened #actual .action .to-off {
+  display: inline;
+}
+#context #contexts-list {
+  position: absolute;
+  top: 100%;
+  right: 0px;
+  margin-top: 5px;
+  border: 1px solid #c0c0c0;
+  background: #fff;
+  min-width: 300px;
+  padding: 5px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: 0px 2px 2px 2px #fff;
+  -moz-box-shadow: 0px 2px 2px 2px #fff;
+  box-shadow: 0px 2px 2px 2px #fff;
+  -webkit-transform: scale(0);
+  -moz-transform: scale(0);
+  transform: scale(0);
+  -webkit-transform-origin: 100% 0%;
+  opacity: 0;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  visibility: hidden;
+}
+html.loaded #context #contexts-list {
+  -webkit-transition: opacity 200ms, transform 200ms, visibility 0s linear 200ms;
+  -moz-transition: opacity 200ms, transform 200ms, visibility 0s linear 200ms;
+  transition: opacity 200ms, transform 200ms, visibility 0s linear 200ms;
+  -webkit-transition: opacity 200ms, -webkit-transform 200ms, visibility 0s linear 200ms;
+  -moz-transition: opacity 200ms, -moz-transform 200ms, visibility 0s linear 200ms;
+}
+#context #contexts-list.opened {
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  transform: scale(1);
+  opacity: 1;
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+  visibility: visible;
+}
+html.loaded #context #contexts-list.opened {
+  -webkit-transition: opacity 200ms, transform 200ms, visibility 0s;
+  -moz-transition: opacity 200ms, transform 200ms, visibility 0s;
+  transition: opacity 200ms, transform 200ms, visibility 0s;
+  -webkit-transition: opacity 200ms, -webkit-transform 200ms, visibility 0s;
+  -moz-transition: opacity 200ms, -moz-transform 200ms, visibility 0s;
+}
+#context #contexts-list p {
+  padding: 5px;
+  margin: 0 0 5px;
+  font-size: 0.8em;
+  color: #808080;
+}
+#context #contexts-list ul {
+  margin: 0px;
+  padding: 0px;
+}
+#context #contexts-list ul li {
+  display: block;
+  margin: 0px;
+  padding: 4px 4px 5px;
+}
+#context #contexts-list ul li a {
+  display: block;
+  color: #666;
+  text-decoration: none;
+}
+#context #contexts-list ul li + li {
+  border-top: 1px solid #c0c0c0;
+}
+#context #contexts-list ul li.current a,
+#context #contexts-list ul li.current a:hover,
+#context #contexts-list ul li.current a:focus {
+  color: #b3b3b3;
+}
+#context #contexts-list ul li a:focus,
+#context #contexts-list ul li a:hover {
+  color: #000;
+}
 body {
   background: #fff;
   font-family: sans-serif;
   margin: 0;
   padding: 0 0 20px;
 }
-body h1#hat {
+body header {
+  margin: 0px;
+  padding: 0px;
+  height: 75px;
+  z-index: 200;
+}
+body #hat {
+  float: left;
   margin: 0px;
   padding: 10px;
   color: #002b36;
 }
-body h1#hat img {
+body #hat img {
   width: 55px;
   height: 55px;
 }
-body h1#hat img,
-body h1#hat #logo {
+body #hat img,
+body #hat #logo {
   display: inline-block;
   vertical-align: middle;
   position: relative;
 }
-body h1#hat #logo .in {
+body #hat #logo .in {
   position: absolute;
   left: 0px;
   background: #002b36;
 }
-body h1#hat #logo .rc,
-body h1#hat #logo .sq {
+body #hat #logo .rc,
+body #hat #logo .sq {
   overflow: hidden;
   position: relative;
   width: 34px;
 }
-body h1#hat #logo .rc {
+body #hat #logo .rc {
   height: 21px;
 }
-body h1#hat #logo .rc .in {
+body #hat #logo .rc .in {
   bottom: 0px;
   width: 38px;
   height: 38px;
@@ -45,10 +186,10 @@ body h1#hat #logo .rc .in {
   -moz-border-radius-bottomright: 38px;
   border-bottom-right-radius: 38px;
 }
-body h1#hat #logo .sq {
+body #hat #logo .sq {
   height: 34px;
 }
-body h1#hat #logo .sq .in {
+body #hat #logo .sq .in {
   top: 0px;
   width: 34px;
   height: 34px;
@@ -68,6 +209,9 @@ body {
 }
 #wrap {
   min-height: 100%;
+  position: relative;
+}
+#wrap > * {
   position: relative;
 }
 #footer-limiter {
@@ -231,6 +375,7 @@ footer a {
 }
 #creation {
   margin: 10px;
+  margin-top: 0px;
 /*
 	#left
 		box-flex 1

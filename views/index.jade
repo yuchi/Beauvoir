@@ -2,16 +2,44 @@
 html
 	head
 		title Beauvoir
-		meta(name="viewport",content="width = device-height")
+		meta(name="viewport",content="width = device-height",target="_blank")
+		script
+			window.actor = !{JSON.stringify(actor.expose())};
+			window.context = !{JSON.stringify(context.expose())};
 		include includes/scripts
 	body
 		#wrap
 
-			h1#hat
-				img(src=user.getGravatar())
-				#logo
-					include includes/logo
-				| eauvoir
+			header
+
+				h1#hat
+					a(href="http://gravatar.com/emails/",title="Change your avatar at Gravatar",target="_blank")
+						img(src=actor.getGravatar())
+					#logo
+						include includes/logo
+					| eauvoir
+
+				if availableContexts.length > 0
+
+					#context
+						#actual(tabindex=0)
+							img.avatar(width=16,height=16,src=context.getGravatar(16))
+							span.username= context.p('username')
+							span &nbsp;
+							span.separator.action
+								span.to-on &darr;
+								span.to-off &uarr;
+						#contexts-list
+							p Switch context:
+							ul
+								each _context in availableContexts
+									- var _username = _context.p('username');
+									- var _current = context.id && (context.id === _context.id);
+									- var _classname = _current ? 'current' : '';
+									li(class=_classname): a(href="/~"+_username)
+										strong= _context.p('fullname')
+										| 
+										em= _username
 
 			form#creation.input.b(action="/lol")
 				#creation-flexer.flex.f-full

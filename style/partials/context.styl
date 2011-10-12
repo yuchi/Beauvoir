@@ -1,0 +1,109 @@
+
+// This is the style for the context switcher
+
+cs_main = silver
+cs_normal = lighten(cs_main,20)
+cs_strong = darken(cs_normal,20)
+
+#context
+	float right
+	margin 10px 20px
+	padding 0px
+	position relative
+
+	#actual
+		cursor default
+		user-select none
+		line-height 30px
+		font-size 20px
+		padding 0 10px
+		border 1px solid cs_normal
+		border-radius 2px
+		html.loaded &
+			transition border 1s, background 1s
+		&:hover,&:focus
+			border-color cs_strong
+			background cs_normal
+
+		img.avatar
+			display inline-block
+			vertical-align middle
+			margin-right 5px
+			position relative
+			top -1px
+			border-radius 2px
+
+		.separator
+			border-left 1px solid silver
+		.action
+			cursor pointer
+			.to-off
+				display none
+			.to-on
+				display inline
+	&.opened
+		#actual
+			.action
+				.to-on
+					display none
+				.to-off
+					display inline
+
+	// Should look like MarcoPolo dropdown
+	#contexts-list
+		position absolute
+		top 100%
+		right 0px
+		margin-top 5px
+		border 1px solid silver
+		background white
+		min-width 300px
+		padding 5px
+		border-radius 3px
+		box-shadow 0px 2px 2px 2px white
+
+		// Normal
+		transform scale(0.0)
+		-webkit-transform-origin 100% 0%
+		opacity 0
+		visibility hidden
+		html.loaded &
+			transition opacity fast, transform fast, visibility 0s linear fast
+			-webkit-transition opacity fast, -webkit-transform fast, visibility 0s linear fast
+			-moz-transition opacity fast, -moz-transform fast, visibility 0s linear fast
+
+		// Opened
+		&.opened
+			transform scale(1.0)
+			opacity 1
+			visibility visible
+			html.loaded &
+				transition opacity fast, transform fast, visibility 0s
+				-webkit-transition opacity fast, -webkit-transform fast, visibility 0s
+				-moz-transition opacity fast, -moz-transform fast, visibility 0s
+
+		p
+			padding 5px
+			margin 0 0 5px
+			font-size 0.8em
+			color gray
+
+		ul
+			margin 0px
+			padding 0px
+
+			li
+				display block
+				margin 0px
+				padding 4px 4px 5px
+				a
+					display block
+					color #666
+					text-decoration none
+				+ li
+					border-top 1px solid silver
+				&.current a
+					&,&:hover,&:focus
+						color lighten(gray, 20)
+				a:focus, a:hover
+					color black

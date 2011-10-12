@@ -1,7 +1,8 @@
 (function() {
-  var AppView, Creation, Task, TaskList, TaskView, Tasks, root;
+  var App, AppView, Creation, Task, TaskList, TaskView, Tasks, root;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   root = this;
+  App = null;
   $(function() {
     var tmpl;
     tmpl = $('#single-task-view');
@@ -14,7 +15,8 @@
         name: '',
         priority: 1,
         closed: false,
-        archived: false
+        archived: false,
+        context: App.context.id
       };
     },
     reverse: {
@@ -37,7 +39,7 @@
     closedByActor: function() {
       var mine;
       mine = (_(this.get('assignedTo'))).select(function(a) {
-        return +a.id === +App.user.id;
+        return a.id === App.actor.id;
       });
       return !!(mine && mine[0] && mine[0].closed);
     },
@@ -64,7 +66,9 @@
   });
   TaskList = Backbone.Collection.extend({
     model: Task,
-    url: '/tasks',
+    url: function() {
+      return "/users/" + App.context.id + "/tasks";
+    },
     initialize: function(options) {
       options || (options = {});
       return _.extend(this, options);
@@ -73,6 +77,15 @@
       return this.filter(function(todo) {
         return todo.get('status') === 'completed';
       });
+    },
+    __flush: function() {
+      var execute;
+      return (execute = __bind(function() {
+        var _ref;
+        return (_ref = this.first()) != null ? _ref.destroy({
+          success: execute
+        }) : void 0;
+      }, this))();
     }
   });
   Tasks = new TaskList;
@@ -166,7 +179,11 @@
       _.bindAll(this, 'addAll', 'addOne');
       Tasks.bind('add', this.addOne);
       Tasks.bind('reset', this.addAll);
-      this.user = window.user || {};
+      this.actor = window.actor;
+      this.context = window.context || this.actor;
+      if (!((this.actor != null) && (this.context != null))) {
+        throw "Environment not initialized";
+      }
       return this.creation = new Creation({
         app: this
       });
@@ -254,10 +271,9 @@
     }
   });
   $(function() {
-    var App;
-    return App = root.App = new AppView;
+    App = root.App = new AppView;
+    return Tasks.fetch();
   });
-  Tasks.fetch();
   _.extend(root, {
     Tasks: Tasks,
     Task: Task

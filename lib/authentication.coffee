@@ -13,10 +13,10 @@ encrypt = (pass, salt) ->
 
 restrict = exports.restrict = (reverse = false, redirect = '/login') ->
 	return (req, res, next) ->
-		able = req.session.user?
+		able = req?.session?.user?
 		if able == not reverse
 			next()
-		else
+		else if req.session?
 			req.session.error = 'Permission denied'
 			redirect = redirect req, res if _.isFunction redirect
 			res.redirect redirect
@@ -83,9 +83,7 @@ create = exports.create = (username, password, fullname, email, fn) ->
 authenticate = exports.authenticate = (username, password, fn) ->
 
 	mock = new models.User
-	mock.find
-		username: username
-		, (err, ids) ->
+	mock.find { username: username }, (err, ids) ->
 			return fn err if err
 			return fn new Error 'No user associated with that username' if not ids.length
 			user = new models.User
@@ -130,10 +128,72 @@ verify = (username, password, properties, user, fn) ->
 				return fn null, user
 	###
 
-load = exports.load = (req, res, next) ->
+###
+# Unused
+loadActor = exports.loadActor = (req, res, next) ->
 	models.User.load req.session.userId, (err, properties) ->
 		if err
 			res.send 500
 		else
-			req.user = @
+			req.actor = @
 			next()
+###
+
+# I love coffeescript...
+_.extend exports,
+	actorHelper: (req, res) -> req.actor
+	contextHelper: (req, res) -> req.context
+	availableContextsHelper: (req, res) -> req.availableContexts
+
+loadActor = exports.loadActor = (req, res, next) ->
+	if req.session?.userId
+		models.User.load req.session.userId, (err, properties) ->
+			if not err
+				req.actor = @
+				next()
+			else
+				res.send 500
+	else
+		next()
+
+loadContextName = exports.loadContextName = (req, res, next) ->
+	if req.params?.context?
+		req.contextName = req.params.context
+	else if req.actor?
+		req.contextName = req.actor.property 'username'
+	next()
+
+loadContext = exports.loadContext = (req, res, next) ->
+	loadContextName req, res, ->
+		if req.contextName?
+			models.User.find { username: req.contextName }, (err, ids) ->
+				res.send 500 if not ids?.length
+				models.User.load ids[0], (err, properties) ->
+					if not err
+						req.context = @
+						next()
+					else
+						res.send 500
+		else
+			# TODO
+			res.send 500
+
+loadAvailableContexts = exports.loadAvailableContexts = (req, res, next) ->
+	complete = ->
+		req.availableContexts = [req.actor]
+		req.actor.getAll 'User', 'parent', (err, ids) ->
+			if not err
+				(pass = _.after ids.length+1, ->
+					next()
+				)()
+				_.each ids, (id) ->
+					models.User.load id, (err, properties) ->
+						req.availableContexts.push @ unless err
+						pass()
+			else
+				res.send 500
+
+	if req.context
+		complete()
+	else
+		loadContext req, res, complete

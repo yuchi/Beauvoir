@@ -1,4 +1,13 @@
 $ ->
+
+	($ 'html').addClass 'loaded'
+
+	contextWrapper = $ '#context'
+	(contextWrapper.find '#actual').bind 'click keyup', (e) ->
+		if e.type == 'click' or +event.which == +13
+			(contextWrapper.find '#contexts-list').toggleClass('opened')
+
+
 	($ '.input')
 		.live( 'focusin', (event) ->
 			self = $ event.target

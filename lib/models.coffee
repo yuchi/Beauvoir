@@ -22,6 +22,23 @@ nohm.logError = (err) ->
 # Top Models
 ###
 
+###
+Organization = nohm.model 'Organization',
+	properties:
+		username:
+			type: 'string'
+			unique: true
+			index: true
+			validations: ['notEmpty']
+		email:
+			type: 'string'
+			unique: true
+			defaultValue: 'error@error.com'
+			validations: ['notEmpty','email']
+		fullname:
+			type: 'string'
+			unique: false # !!!
+###
 
 User = nohm.model 'User',
 	properties:
@@ -44,16 +61,20 @@ User = nohm.model 'User',
 		fullname:
 			type: 'string'
 			unique: false # !!!
+		kind:
+			type: 'integer'
+			defaultValue: -> User.kinds.PERSON
 		profile:
 			type: 'json'
 
-	idGenerator: 'increment'
+	#idGenerator: 'increment'
 
 	methods:
 		expose: ->
 			id: @id
 			fullname: @p 'fullname'
 			username: @p 'username'
+			#emailhash: @getEmailHash()
 		###
 		info: (parameter) ->
 			profile = @p 'profile'
@@ -62,17 +83,27 @@ User = nohm.model 'User',
 			else
 				parameter
 		###
-		getGravatar: (size=55) ->
-			"https://secure.gravatar.com/avatar/#{@getEmailHash()}?s=#{size}&d=retro"
-		getEmailHash: ->
-			hashlib.md5 String::toLowerCase.call _.trim @p 'email'
+		getGravatar: (size=55) -> "https://secure.gravatar.com/avatar/#{@getEmailHash()}?s=#{size}&d=retro"
+		getEmailHash: -> hashlib.md5 String::toLowerCase.call _.trim @p 'email'
+		isOrganization: -> User.kinds.ORGANIZATION == @p 'kind'
+		isPerson: -> User.kinds.PERSON == @p 'kind'
 
+User.kinds =
+	PERSON: 0
+	ORGANIZATION: 1
+
+User.kinds.reverse =
+	0: 'person'
+	1: 'organization'
 
 Task = nohm.model 'Task',
 	properties:
 		name:
 			type: 'string'
 			unique: false
+		context:
+			type: 'string'
+			index: true
 		priority:
 			type: 'integer'
 			index: false
@@ -94,12 +125,13 @@ Task = nohm.model 'Task',
 			index: true
 		createDate:
 			type: 'timestamp'
+			defaultValue: -> new Date()
 			validations: ['notEmpty']
 		modifiedDate:
 			type: 'timestamp'
 			validations: ['notEmpty']
 
-	idGenerator: 'increment'
+	#idGenerator: 'increment'
 
 	methods:
 
@@ -125,8 +157,10 @@ Task = nohm.model 'Task',
 					attributes.closed = @isClosed attributes
 					callback null, attributes
 				)()
+				console.dir ids
 				if not err
 					for userId in ids
+						console.dir userId
 						User.load userId, (err, properties) ->
 							if not err
 								userAttributes = @expose()
