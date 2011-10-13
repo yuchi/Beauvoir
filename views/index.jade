@@ -46,8 +46,8 @@ html
 						.dd-panel
 							p Settings and actions
 							ul.actions
-								li
-									a.unavailable(href="#") Edit your credentials
+								li: a(href="http://gravatar.com/emails/",target="_blank") Change your avatar <small>(at Gravatar.com)</small>
+								li: a.unavailable(href="#") Edit your credentials
 								li
 									if availableContexts.length > 1
 										a.left(href="javascript:$('#actual').click()") Change context
