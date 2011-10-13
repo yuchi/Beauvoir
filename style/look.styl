@@ -39,7 +39,13 @@ p_high   = c_red
 p_low = black
 
 #err
-	error
+	err
+
+// Some base styles
+
+.unavailable
+	color desaturate(darken(c_red,20),20) !important
+	text-decoration line-through !important
 
 // Logo
 
@@ -75,7 +81,8 @@ logo(bg)
 
 // Contents
 
-@import 'partials/context'
+@import 'partials/context';
+@import 'partials/login';
 
 body
 	background white
@@ -131,6 +138,7 @@ footer
 	position relative
 	a
 		color c_base03
+		text-decoration none
 
 .hide
 	display none

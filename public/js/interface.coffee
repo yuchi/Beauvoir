@@ -2,11 +2,13 @@ $ ->
 
 	($ 'html').addClass 'loaded'
 
-	contextWrapper = $ '#context'
-	(contextWrapper.find '#actual').bind 'click keyup', (e) ->
+	($ '.dd-icon').bind 'click keyup', (e) ->
 		if e.type == 'click' or +event.which == +13
-			(contextWrapper.find '#contexts-list').toggleClass('opened')
-
+			self = ($ @)
+			panel = self.closest('.dd-wrapper')
+			active = panel.hasClass 'opened'
+			self.closest('.dd-list').find('.dd-wrapper').removeClass 'opened'
+			panel.toggleClass 'opened', not active
 
 	($ '.input')
 		.live( 'focusin', (event) ->

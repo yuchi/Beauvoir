@@ -1,12 +1,16 @@
 (function() {
   var e, escape;
   $(function() {
-    var assign, contextWrapper, due, name, priority, resetters;
+    var assign, due, name, priority, resetters;
     ($('html')).addClass('loaded');
-    contextWrapper = $('#context');
-    (contextWrapper.find('#actual')).bind('click keyup', function(e) {
+    ($('.dd-icon')).bind('click keyup', function(e) {
+      var active, panel, self;
       if (e.type === 'click' || +event.which === +13) {
-        return (contextWrapper.find('#contexts-list')).toggleClass('opened');
+        self = $(this);
+        panel = self.closest('.dd-wrapper');
+        active = panel.hasClass('opened');
+        self.closest('.dd-list').find('.dd-wrapper').removeClass('opened');
+        return panel.toggleClass('opened', !active);
       }
     });
     ($('.input')).live('focusin', function(event) {

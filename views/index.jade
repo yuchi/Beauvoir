@@ -19,27 +19,39 @@ html
 						include includes/logo
 					| eauvoir
 
-				if availableContexts.length > 0
-
-					#context
-						#actual(tabindex=0)
-							img.avatar(width=16,height=16,src=context.getGravatar(16))
-							span.username= context.p('username')
-							span &nbsp;
-							span.separator.action
-								span.to-on &darr;
-								span.to-off &uarr;
-						#contexts-list
-							p Switch context:
-							ul
-								each _context in availableContexts
-									- var _username = _context.p('username');
-									- var _current = context.id && (context.id === _context.id);
-									- var _classname = _current ? 'current' : '';
-									li(class=_classname): a(href="/~"+_username)
-										strong= _context.p('fullname')
-										| 
-										em= _username
+				.dd-list
+					if availableContexts.length > 1
+						#context.dd-wrapper
+							#actual.dd-icon(tabindex=0)
+								img.avatar(width=16,height=16,src=context.getGravatar(16))
+								span.username= context.p('username')
+								span &nbsp;
+								span.separator.action
+									span.to-on &darr;
+									span.to-off &uarr;
+							#contexts-list.dd-panel
+								p Switch context:
+								ul.list
+									each _context in availableContexts
+										- var _username = _context.p('username');
+										- var _current = context.id && (context.id === _context.id);
+										- var _classname = _current ? 'current' : '';
+										li(class=_classname): a(href="/~"+_username)
+											strong= _context.p('fullname')
+											| 
+											em= _username
+					#settings.dd-wrapper
+						.dd-icon(tabindex=0)
+							span &#9881;
+						.dd-panel
+							p Settings and actions
+							ul.actions
+								li
+									a.unavailable(href="#") Edit your credentials
+								li
+									if availableContexts.length > 1
+										a.left(href="javascript:$('#actual').click()") Change context
+									a.right(href="/logout") Logout
 
 			form#creation.input.b(action="/lol")
 				#creation-flexer.flex.f-full
@@ -51,10 +63,11 @@ html
 							.attributes
 								#priority.priority.icon.padded
 					#creation-right.wrap.flex.f-0
-						.separator.mp_container.mp_full
-							.validator.icon: label(for='assign') @
-							input#assign.h.small.lockable(type="text",placeholder="Assign (you)",autocomplete='off')
-							.icon.delete.reset#reset-due(tabindex=0) &times;
+						if actor.id !== context.id
+							.separator.mp_container.mp_full
+								.validator.icon: label(for='assign') @
+								input#assign.h.small.lockable(type="text",placeholder="Assign (you)",autocomplete='off')
+								.icon.delete.reset#reset-due(tabindex=0) &times;
 						.separator
 							.validator.icon.due: label(for='due',style="position:relative;top:2px;") due
 							input#due.h.date.medium.lockable(type="text",placeholder="",autocomplete='off')
@@ -66,31 +79,7 @@ html
 
 			#footer-limiter
 
-		footer
-			div Powered by <a href="https://github.com/yuchi/Beauvoir">Beauvoir</a> 
-			div
-				small
-					| uses 
-					a(href="http://nodejs.org") Node.js
-					| ,
-					a(href="http://redis.io") Redis
-					| , 
-					a(href="http://maritz.github.com/nohm/") Nohm
-					| , 
-					a(href="http://expressjs.com/") Express
-					| , 
-					a(href="http://learnboost.github.com/stylus/") Stylus
-					| ,
-					a(href="http://jade-lang.com") Jade
-					|	and others
-			div
-				small
-					| interface provided with 
-					a(href="http://jquery.com") jQuery
-					| ,
-					a(href="https://github.com/jstayton/jquery-marcopolo") Marco Polo
-					| ,
-					a(href="http://ethanschoonover.com/solarized") Solarized
+		include includes/footer
 
 		.hide
 			//- Templates
