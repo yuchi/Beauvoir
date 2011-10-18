@@ -1,0 +1,38 @@
+
+_modal_w = 600px
+
+.modal
+	display none
+	position absolute
+	z-index 9999
+	top 0px
+	left 50%
+	margin 30px (_modal_w / -2)
+	min-height 200px
+	width _modal_w - 2
+	border 1px solid gray
+	border-color rgba(0,0,0,0.6)
+	background-clip padding-box
+	box-shadow 0px 10px 200px rgba(0,0,0,0.3)
+	background white
+	color #333
+	border-radius 2px
+	> .modal-container
+		padding 20px 20px
+		position relative
+
+		.modal-closer
+			background silver
+			color white
+			position absolute
+			top 5px
+			right 5px
+			width 20px
+			line-height 20px
+			font-size 20px
+			text-align center
+			cursor pointer
+
+		> :first-child
+			padding-top 0px
+			margin-top 0px

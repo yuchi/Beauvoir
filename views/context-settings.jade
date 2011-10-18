@@ -1,0 +1,37 @@
+!!! 5
+html
+	head
+		title Beauvoir, context settings
+		meta(name="viewport",content="width = device-height",target="_blank")
+		script
+			window.actor = !{JSON.stringify(actor.expose())};
+			window.context = !{JSON.stringify(context.expose())};
+		include includes/scripts
+	body
+		#wrap
+
+			header
+
+				h1#hat
+					a(href="http://gravatar.com/emails/",title="Change your avatar at Gravatar",target="_blank")
+						img(src=actor.getGravatar())
+					#logo
+						include includes/logo
+					| eauvoir
+
+			#page
+				h1 Context settings
+				if allowedUsers.length
+					ul#allowed-users
+						for user in allowedUsers
+							li: form(method="POST", style="display:inline;")
+								input(type="hidden",name="action",value="delete")
+								span.name= user.p('username')
+								button(type="submit") Delete
+				else
+					p No user is allowed to use this account as a context.
+
+			#footer-limiter
+
+		include includes/footer
+
