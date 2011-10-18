@@ -22,23 +22,6 @@ nohm.logError = (err) ->
 # Top Models
 ###
 
-###
-Organization = nohm.model 'Organization',
-	properties:
-		username:
-			type: 'string'
-			unique: true
-			index: true
-			validations: ['notEmpty']
-		email:
-			type: 'string'
-			unique: true
-			defaultValue: 'error@error.com'
-			validations: ['notEmpty','email']
-		fullname:
-			type: 'string'
-			unique: false # !!!
-###
 
 User = nohm.model 'User',
 	properties:
@@ -87,6 +70,23 @@ User = nohm.model 'User',
 		getEmailHash: -> hashlib.md5 String::toLowerCase.call _.trim @p 'email'
 		isOrganization: -> User.kinds.ORGANIZATION == @p 'kind'
 		isPerson: -> User.kinds.PERSON == @p 'kind'
+		getAllowedUsers: (callback) ->
+			callback = _.once callback
+			this.getAll 'User', (err, ids) ->
+				if not err
+					users = []
+					(pass = _.after ids.length+1, ->
+						callback null, users
+					)()
+					for id in ids
+						User.load id, (err, properties) ->
+							if not err
+								users.push @
+								pass()
+							else
+								callback err
+				else
+					callback err
 
 User.kinds =
 	PERSON: 0

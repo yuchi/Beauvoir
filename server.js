@@ -102,6 +102,20 @@
       }
     });
   });
+  app.get('/context-settings', auth.restrict(), auth.loadAvailableContexts, function(req, res) {
+    return req.actor.getAllowedUsers(function(err, users) {
+      if (!err) {
+        return res.render('context-settings', {
+          allowedUsers: users
+        });
+      } else {
+        return res.send(500);
+      }
+    });
+  });
+  app.post('/context-settings', function(req, res) {
+    return TODO;
+  });
   app.get('/public/*.(js|css|png)', function(req, res) {
     return res.sendfile('./' + req.url);
   });

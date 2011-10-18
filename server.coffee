@@ -68,6 +68,7 @@ app.dynamicHelpers
 	context: auth.contextHelper
 	availableContexts: auth.availableContextsHelper
 
+
 ###
 # Routes
 ###
@@ -115,6 +116,17 @@ app.post '/signup', (req, res) ->
 		if data
 			winston.info "User '#{req.body.username}' successfully created."
 			res.redirect 'home'
+
+app.get '/context-settings', auth.restrict(), auth.loadAvailableContexts, (req, res) ->
+	req.actor.getAllowedUsers (err, users) ->
+		if not err
+			res.render 'context-settings'
+				allowedUsers: users
+		else
+			res.send 500
+
+app.post '/context-settings', (req, res) ->
+	TODO
 
 app.get '/public/*.(js|css|png)', (req, res) ->
 	res.sendfile './' + req.url

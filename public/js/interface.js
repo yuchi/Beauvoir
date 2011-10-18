@@ -22,6 +22,17 @@
       self = $(event.target);
       return self.closest('.input').andSelf().toggleClass('focus', false);
     });
+    ($('.modal-closer')).live('click', function(event) {
+      var self;
+      self = $(event.target);
+      return self.closest('.modal').hide();
+    });
+    ($('.modal-opener')).live('click', function(event) {
+      var self;
+      self = $(event.target);
+      ($(self.attr('href'))).show();
+      return event.preventDefault();
+    });
     assign = $('#assign');
     assign.bind('change marcopolochange', function() {
       var self;

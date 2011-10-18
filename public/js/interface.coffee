@@ -20,6 +20,19 @@ $ ->
 			self.closest('.input').andSelf().toggleClass 'focus', false
 		)
 
+	($ '.modal-closer')
+		.live( 'click', (event) ->
+			self = $ event.target
+			self.closest('.modal').hide()
+		)
+
+	($ '.modal-opener')
+		.live( 'click', (event) ->
+			self = $ event.target
+			($ self.attr 'href').show()
+			event.preventDefault()
+		)
+
 	assign = $ '#assign'
 	assign.bind 'change marcopolochange', ->
 		self = $ this
