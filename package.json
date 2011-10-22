@@ -20,7 +20,7 @@
 	  "connect-redis": "*",
 	  "winston": "*",
 	  "express-resource": "*",
-    "stylus":">=0.15",
+    "stylus": "*",
     "connect-assets":"*",
 	  "nohm": "0.6.1"
   },
