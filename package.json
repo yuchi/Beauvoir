@@ -21,7 +21,7 @@
 	  "winston": "*",
 	  "express-resource": "*",
     "stylus":">=0.15",
-    "connect-assests":"latest",
+    "connect-assets":"*",
 	  "nohm": "0.6.1"
   },
   "scripts": {
