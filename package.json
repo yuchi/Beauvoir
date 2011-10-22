@@ -20,9 +20,11 @@
 	  "connect-redis": "*",
 	  "winston": "*",
 	  "express-resource": "*",
-	  "nohm": "0.6"
+    "stylus":">=0.15",
+    "connect-assests":"latest",
+	  "nohm": "0.6.1"
   },
   "engines": {
-    "node": "*"
+    "node": ">=0.4"
   }
 }

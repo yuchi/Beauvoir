@@ -42,7 +42,7 @@ require 'express-resource' # monkey patches
 auth = require './lib/authentication'
 jade = require 'jade'
 stylus = require 'stylus'
-RedisStore = (require 'connect-redis')(express)
+RedisStore = (require 'connect-redis') express
 
 # Application configuration
 
@@ -55,8 +55,10 @@ app.use express.cookieParser()
 
 app.use express.session
 	store: new RedisStore()
-	secret: 'Secretly I am an unicorn'
+	secret: 'Secretly I am an unicorn' # what about using a config file?
 
+assets = require 'connect-assets'
+app.use assets()
 
 ###
 # Middlewares and helpers
@@ -128,9 +130,10 @@ app.get '/context-settings', auth.restrict(), auth.loadAvailableContexts, (req, 
 app.post '/context-settings', (req, res) ->
 	TODO
 
+###
 app.get '/public/*.(js|css|png)', (req, res) ->
 	res.sendfile './' + req.url
-
+###
 
 ###
 # Resources
