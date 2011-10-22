@@ -24,10 +24,10 @@
     "connect-assests":"latest",
 	  "nohm": "0.6.1"
   },
-  "engines": {
-    "node": ">=0.4"
-  },
   "scripts": {
     "start": "coffee server.coffee"
+  },
+  "engines": {
+    "node": ">=0.4"
   }
 }
