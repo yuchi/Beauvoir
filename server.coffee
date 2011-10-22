@@ -18,8 +18,8 @@ path = require 'path'
 # Logging
 
 winston = require 'winston'
-winston.add winston.transports.File,
-	filename: 'beauvoir.log'
+#winston.add winston.transports.File,
+#	filename: 'beauvoir.log'
 
 ###
 # Persistence
