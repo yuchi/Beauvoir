@@ -1,0 +1,69 @@
+info it worked if it ends with ok
+verbose cli [ 'node', '/usr/local/bin/npm', 'start', 'beauvoir' ]
+info using npm@1.0.101
+info using node@v0.4.8
+verbose config file /Users/pier/.npmrc
+verbose config file /usr/local/etc/npmrc
+verbose config file /usr/local/lib/node_modules/npm/npmrc
+silly testEngine { name: 'Beauvoir',
+silly testEngine   description: 'Simple project management app built with node.js',
+silly testEngine   version: '0.1.10',
+silly testEngine   homepage: 'https://github.com/yuchi/Beauvoir',
+silly testEngine   repository: 
+silly testEngine    { type: 'git',
+silly testEngine      url: 'git://github.com/yuchi/Beauvoir.git' },
+silly testEngine   author: 
+silly testEngine    { name: 'Pier Paolo Ramon',
+silly testEngine      email: 'ramonpierre@gmail.com' },
+silly testEngine   main: 'server.js',
+silly testEngine   directories: { lib: 'lib' },
+silly testEngine   dependencies: 
+silly testEngine    { underscore: '1.1.7',
+silly testEngine      hashlib: '*',
+silly testEngine      connect: '*',
+silly testEngine      express: '*',
+silly testEngine      'connect-redis': '*',
+silly testEngine      winston: '*',
+silly testEngine      'express-resource': '*',
+silly testEngine      stylus: '*',
+silly testEngine      'connect-assets': '*',
+silly testEngine      nohm: '0.6.1' },
+silly testEngine   scripts: { start: 'coffee server.coffee' },
+silly testEngine   engines: { node: '>=0.4' },
+silly testEngine   _npmUser: { name: 'yuchi', email: 'ramonpierre@gmail.com' },
+silly testEngine   _id: 'Beauvoir@0.1.10',
+silly testEngine   devDependencies: {},
+silly testEngine   _engineSupported: true,
+silly testEngine   _npmVersion: '1.0.101',
+silly testEngine   _nodeVersion: 'v0.4.8',
+silly testEngine   _defaultsLoaded: true }
+verbose caching /usr/local/lib/node_modules/beauvoir/package.json
+verbose loadDefaults Beauvoir@0.1.10
+verbose run-script [ 'prestart', 'start', 'poststart' ]
+info prestart Beauvoir@0.1.10
+info start Beauvoir@0.1.10
+verbose unsafe-perm in lifecycle true
+silly exec sh "-c" "coffee server.coffee"
+silly spawning [ 'sh',
+silly spawning   [ '-c', 'coffee server.coffee' ],
+silly spawning   '/usr/local/lib/node_modules/beauvoir' ]
+info Beauvoir@0.1.10 Failed to exec start script
+ERR! Beauvoir@0.1.10 start: `coffee server.coffee`
+ERR! `sh "-c" "coffee server.coffee"` failed with 127
+ERR! 
+ERR! Failed at the Beauvoir@0.1.10 start script.
+ERR! This is most likely a problem with the Beauvoir package,
+ERR! not with npm itself.
+ERR! Tell the author that this fails on your system:
+ERR!     coffee server.coffee
+ERR! You can get their info via:
+ERR!     npm owner ls Beauvoir
+ERR! There is likely additional logging output above.
+ERR! 
+ERR! System Darwin 11.2.0
+ERR! command "node" "/usr/local/bin/npm" "start" "beauvoir"
+ERR! cwd /Users/pier/Development/Beauvoir
+ERR! node -v v0.4.8
+ERR! npm -v 1.0.101
+ERR! code ELIFECYCLE
+verbose exit [ 1, true ]
