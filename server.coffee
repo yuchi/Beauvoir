@@ -1,5 +1,5 @@
 version = '0.1.0'
-dev_port = 3000
+dev_port = 80
 server_port = 80
 config_file = '~/beauvoir.json'
 
