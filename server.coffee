@@ -1,7 +1,5 @@
 version = '0.1.0'
-dev_port = 80
-server_port = 80
-config_file = '~/beauvoir.json'
+config_file = process.cwd() + '/config.json'
 
 
 ###
@@ -178,10 +176,11 @@ app.get '/~:context', auth.restrict(), auth.loadAvailableContexts, (req, res) ->
 
 # Opening configuration
 path.exists config_file, (exists) ->
-	if not exists
-		app.listen (port = dev_port)
-	else
-		app.listen (port = server_port)
+	config = {}
+	_.extend config, JSON.parse fs.readFileSync config_file, 'utf-8'
+
+	port = if process.env.NODE_ENV == 'production' then 80 else (config.port || 3000)
+	app.listen port
 
 	winston.info "Beauvoir started on port #{port}"
 
