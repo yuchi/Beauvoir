@@ -10,12 +10,19 @@ cs_strong = darken(cs_normal,20)
 	margin 0 5px
 
 .dd-wrapper
+	display block
 	float left
 	margin 10px 5px
 	padding 0px
 	position relative
 
+	a.dd-icon
+		cursor pointer
+
 	.dd-icon
+		text-decoration none
+		color black
+		display block
 		cursor default
 		user-select none
 		line-height 30px
@@ -95,6 +102,10 @@ cs_strong = darken(cs_normal,20)
 					color lighten(gray, 20)
 			a:focus, a:hover
 					color black
+
+			.icon
+				display inline-block
+				width 2.5ex
 
 			a.right
 				float right

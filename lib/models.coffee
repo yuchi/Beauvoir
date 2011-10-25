@@ -70,7 +70,9 @@ User = nohm.model 'User',
 		getEmailHash: -> hashlib.md5 String::toLowerCase.call _.trim @p 'email'
 		isOrganization: -> User.kinds.ORGANIZATION == @p 'kind'
 		isPerson: -> User.kinds.PERSON == @p 'kind'
+
 		getAllowedUsers: (callback) ->
+			broken = false
 			callback = _.once callback
 			this.getAll 'User', (err, ids) ->
 				if not err
@@ -83,9 +85,70 @@ User = nohm.model 'User',
 							if not err
 								users.push @
 								pass()
-							else
+							else if not broken
+								broken = true
 								callback err
 				else
+					callback err
+
+		disallow: (id, callback) ->
+			context = @
+			target = null
+			User.load id, (err, properties) ->
+				target = @
+				if not err
+					context.unlink target
+					context.save (err) ->
+						winston.info "Context #{context.id} has successfully disallowed User #{target.id}" unless err
+						callback err
+				else
+					callback err
+
+		allow: (id, callback) ->
+			context = @
+			target = null
+			User.load id, (err, properties) ->
+				target = @
+				if not err and context.id != @id
+					context.link target
+					context.save (err) ->
+						console.log 'here 2'
+						winston.info "Context #{context.id} has successfully allowed User #{target.id}" unless err
+						callback err
+				else
+					callback err
+
+		allowBySearch: (search, callback) ->
+			context = @
+			broken = false
+			found = []
+			pass = _.after 2, ->
+				found = _.uniq _.flatten found
+				(pass = _.after found.length+1, ->
+					callback null
+				)()
+				for id in found
+					context.allow id, (err) ->
+						if not err
+							callback null
+						else if not broken
+							broken = true
+							callback err
+ 
+
+			User.find username: search, (err, ids) ->
+				if not err
+					found.push ids
+					pass()
+				else if not broken
+					broken = true
+					callback err
+			User.find email: search, (err, ids) ->
+				if not err
+					found.push ids
+					pass()
+				else if not broken
+					broken = true
 					callback err
 
 User.kinds =

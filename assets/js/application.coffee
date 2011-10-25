@@ -7,7 +7,7 @@ App = null
 
 $ ->
 	tmpl = $ '#single-task-view'
-	dust.loadSource dust.compile tmpl.html(), 'task'
+	dust.loadSource dust.compile (tmpl.html() or ''), 'task'
 	tmpl.remove()
 
 # Client side models

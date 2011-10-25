@@ -125,8 +125,21 @@ app.get '/context-settings', auth.restrict(), auth.loadAvailableContexts, (req, 
 		else
 			res.send 500
 
-app.post '/context-settings', (req, res) ->
-	TODO
+app.post '/context-settings', auth.restrict(), (req, res) ->
+
+	if req.body?.action == 'delete' and req.body?.id?
+		req.actor.disallow req.body.id, (err) ->
+			if not err
+				res.redirect '/context-settings'
+			else
+				res.send 500
+
+	if req.body?.action == 'add' and req.body?.identifier?
+		req.actor.allowBySearch req.body.identifier, (err) ->
+			if not err
+				res.redirect '/context-settings'
+			else
+				res.send 500
 
 ###
 app.get '/public/*.(js|css|png)', (req, res) ->

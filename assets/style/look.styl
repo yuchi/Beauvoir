@@ -1,4 +1,14 @@
 
+// Fonts
+
+/*@import url('http://fonts.googleapis.com/css?family=Philosopher:400,700,400italic,700italic');*/
+@import url('http://fonts.googleapis.com/css?family=Philosopher:700');
+font-decorated(weight)
+	font-family 'Philosopher', Helvetica, Arial, sans-serif
+	font-weight weight
+
+// Requires
+
 @import './utils/vendor';
 @import 'nib';
 
@@ -83,6 +93,7 @@ logo(bg)
 
 @import 'partials/context';
 @import 'partials/login';
+@import 'partials/page';
 //@import 'interface/modals';
 
 body
@@ -99,6 +110,7 @@ body
 		z-index 200
 
 	#hat
+		font-decorated 700
 		float left
 		margin 0px
 		padding 10px
@@ -288,6 +300,8 @@ f_valid = c_blue
 			border-color darken(f_hover,20) f_hover f_hover
 		&.focus
 			border-color darken(f_focus,20) f_focus f_focus
+		&.p-low.focus
+			border-color darken(c_blue,20) c_blue c_blue
 
 	input.h
 		padding 0px 5px

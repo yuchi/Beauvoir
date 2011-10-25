@@ -2,7 +2,7 @@ $ ->
 
 	($ 'html').addClass 'loaded'
 
-	($ '.dd-icon').bind 'click keyup', (e) ->
+	($ '.dd-icon:not(.fake)').bind 'click keyup', (e) ->
 		if e.type == 'click' or +event.which == +13
 			self = ($ @)
 			panel = self.closest('.dd-wrapper')

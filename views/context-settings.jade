@@ -19,17 +19,71 @@ html
 						include includes/logo
 					| eauvoir
 
-			#page
+				.dd-list
+					#context.dd-wrapper
+						if availableContexts.length > 1
+							#actual.dd-icon(tabindex=0)
+								span Contexts
+								span &nbsp;
+								span.separator.action
+									span.to-on &darr;
+									span.to-off &uarr;
+							#contexts-list.dd-panel
+								p Go to context:
+								ul.list
+									each _context in availableContexts
+										- var _icon = actor.id === _context.id ? '&#10033; ' : '&#8258; ';
+										- var _username = _context.p('username');
+										- var _current = context.id && (context.id === _context.id);
+										li: a(href="/~"+_username)
+											span.icon!= _icon
+											strong= _context.p('fullname')
+											| 
+											em= _username
+						else
+							a#actual.dd-icon.fake(tabindex=0,href="/")
+								span Back to application
+								span &nbsp;
+								span.separator.action
+									span &larr;
+
+					include includes/settings
+
+
+			section#page
 				h1 Context settings
+
+				if ! allowedUsers.length
+					.alert
+						p No user is actually allowed to use this account as a context.
+						p If you add a new user, this account <strong>will become accessible</strong> in the contexts panels for the listed users.
+				else
+					.message
+						p What follows is the list of the users allowed to use this account as context.
+					.alert
+						p The removal of a user can lead to unexpected results.
+
+				form.padder.input.b.p-low(method="POST")
+					input(type="hidden",name="action",value="add")
+					.flex.f-full
+						.wrap.flex.f-1
+							.wrap.flex.f-full
+								.placer
+									input.h.f(type="text",name="identifier",value="",placeholder="username or email")
+						.wrap.flex.f-0
+							.separator
+								button.action.create(type="submit") Add
+
 				if allowedUsers.length
 					ul#allowed-users
 						for user in allowedUsers
 							li: form(method="POST", style="display:inline;")
 								input(type="hidden",name="action",value="delete")
-								span.name= user.p('username')
+								input(type="hidden",name="id",value=user.id)
+								span.fullname= user.p('fullname')
+								em.username= ' (' + user.p('username') + ')'
 								button(type="submit") Delete
-				else
-					p No user is allowed to use this account as a context.
+
 
 			#footer-limiter
 

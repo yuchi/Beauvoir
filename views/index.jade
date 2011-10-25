@@ -33,26 +33,17 @@ html
 								p Switch context:
 								ul.list
 									each _context in availableContexts
+										- var _icon = actor.id === _context.id ? '&#10033; ' : '&#8258; ';
 										- var _username = _context.p('username');
 										- var _current = context.id && (context.id === _context.id);
 										- var _classname = _current ? 'current' : '';
 										li(class=_classname): a(href="/~"+_username)
+											span.icon!= _icon
 											strong= _context.p('fullname')
 											| 
 											em= _username
-					#settings.dd-wrapper
-						.dd-icon(tabindex=0)
-							span &#9881;
-						.dd-panel
-							p Settings and actions
-							ul.actions
-								li: a(href="http://gravatar.com/emails/",target="_blank") Change your avatar <small>(at Gravatar.com)</small>
-								li: a.unavailable(href="#") Edit your credentials
-								- // li: a(href="/context-settings") Edit context settings
-								li
-									if availableContexts.length > 1
-										a.left(href="javascript:$('#actual').click()") Change context
-									a.right(href="/logout") Logout
+
+					include includes/settings
 
 			form#creation.input.b(action="/lol")
 				#creation-flexer.flex.f-full
@@ -84,7 +75,7 @@ html
 
 		.hide
 			//- Templates
-			#single-task-view
+			#single-task-view.tmpl
 				li.task(class="{status} priority-{priority}",tabindex=0)
 					.toggle &#10003;
 					.archive Archive
