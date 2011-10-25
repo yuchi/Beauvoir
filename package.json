@@ -31,7 +31,7 @@
   "scripts": {
     "start": "coffee server.coffee"
   },
-  "engines": {
-    "node": ">=0.4"
+  "engine": {
+    "node": "0.4.x"
   }
 }
