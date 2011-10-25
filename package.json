@@ -8,7 +8,11 @@
     "url": "git://github.com/yuchi/Beauvoir.git"
   },
   "author": "Pier Paolo Ramon <ramonpierre@gmail.com>",
-  "main": "server.js",
+  "licenses": [
+    { "type" :"GPL3", "url":"https://raw.github.com/yuchi/Beauvoir/master/LICENSE" }
+  ],
+  "bugs" : { "url" : "https://github.com/yuchi/Beauvoir/issues" },
+  "main": "server.coffee",
   "directories": {
     "lib": "lib"
   },
