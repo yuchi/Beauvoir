@@ -169,6 +169,7 @@ tick_size = 25px
 	list-style none
 	display block
 	overflow hidden
+	//transition background-color fast
 
 	.toggle
 		width tick_size
@@ -205,14 +206,34 @@ tick_size = 25px
 
 	.archive
 		display none
+
+	.trash
+	.archive
+		opacity 0
 		cursor pointer
 		float right
 		margin 5px
 		line-height tick_size - 3px
 		padding-top 3px
-		transition opacity fast ease fast
+		//transition opacity fast ease slow
 		color c_base03
-		opacity 0
+		&:before
+			content '✕ '
+
+	.trash
+		color c_red
+
+	&:focus
+	&:hover
+	&.trashing
+		.trash
+			opacity 1
+			//transition opacity fast ease 0
+	&:focus
+	&:hover
+	&.archiving
+		&.completed .archive
+			opacity 1
 
 	time
 		text-transform uppercase
@@ -231,9 +252,6 @@ tick_size = 25px
 			text-decoration line-through
 		.archive
 			display block
-		&:hover .archive
-			opacity 1
-			transition opacity fast ease 0
 
 	task(main, bg)
 		background bg
@@ -247,6 +265,13 @@ tick_size = 25px
 		task p_medium white
 	&.priority-3
 		task p_high c_base3
+
+	&.trashing
+		background lighten(c_red,30)
+		color black
+	&.archiving
+		background gray
+		color black
 
 // Create task form
 

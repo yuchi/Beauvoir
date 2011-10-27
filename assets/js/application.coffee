@@ -78,10 +78,20 @@ TaskView = Backbone.View.extend
 
 	events:
 		'keyup'          : 'keyHandler'
+		'keydown'        : 'keyHandler'
 		'click .toggle'  : 'toggle'
 		'click .archive' : 'archive'
+		'click .trash'   : 'trash'
 	#	'dblclick .name' : 'open'
 	#	'blur .name'     : 'close'
+
+	keyEvents:
+		keyup:
+			13: 'toggle'
+			8:  'archive'
+			46: 'trash'
+		keydown:
+			8:  'noop'
 
 	initialize: (options) ->
 		options or= {}
@@ -103,17 +113,16 @@ TaskView = Backbone.View.extend
 			$(@el).attr
 				class: newel.attr 'class'
 				tabindex: newel.attr 'tabindex'
-		#$(@el).html @model.get 'name'
 		@
 
 	keyHandler: (event) ->
-		if event.which == 13
-			@toggle event
+		@[@keyEvents?[event.type]?[event.which] or '']? event
+
+	toggleClass: (classname, toggle) ->
+		($ @el).toggleClass classname, !!toggle
 
 	toggle: (event) ->
-
-		console.log _.clone @model.attributes
-
+		event?.preventDefault()
 		params = {}
 		if @model.closedByActor()
 			params.opening = true
@@ -124,8 +133,23 @@ TaskView = Backbone.View.extend
 			success: => @model.unset 'closing'			
 
 	archive: (event) ->
-		@model.archive()
+		event?.preventDefault()
+		return if not @model.get 'closed'
+		@toggleClass 'archiving', true
+		root.App.confirm "Do you really want to archive this task?", (really) =>
+			@model.archive() unless not really
+			@toggleClass 'archiving', false
 		@
+
+	trash: (event) ->
+		event?.preventDefault()
+		@toggleClass 'trashing', true
+		root.App.confirm "Do you really want to trash this task?", (really) =>
+			@model.destroy() unless not really
+			@toggleClass 'trashing', false
+		@
+
+	noop: -> false
 
 	###
 	open: (event) ->
@@ -174,12 +198,20 @@ AppView = Backbone.View.extend
 		collection.each @addOne
 
 	create: (name, assignedTo, due, priority = 1) ->
-		console.log arguments
 		Tasks.create
 			dueDate: due
 			name: name
 			priority: priority
 			assignedTo: [assignedTo]
+
+	# Interface
+
+	confirm: (message, callback) ->
+		result = confirm message
+		callback result
+	prompt: (message, callback) ->
+		result = prompt message
+		callback result
 
 Creation = Backbone.View.extend
 	events:
