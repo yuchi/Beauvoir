@@ -198,13 +198,18 @@ AppView = Backbone.View.extend
 
 	create: (name, assignedTo, due, priority = 1) ->
 
-		console.log { assignedTo }
+		if assignedTo?.length > 0
+			assignedTo = _.compact _.flatten assignedTo
+		else
+			assignedTo = []
 
-		Tasks.create
+		props =
 			dueDate: due
 			name: name
 			priority: priority
-			assignedTo: _.flatten [ assignedTo ]
+			assignedTo: assignedTo
+
+		Tasks.create props
 
 	# Interface
 
