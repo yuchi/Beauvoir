@@ -34,6 +34,35 @@ $ ->
 		)
 
 	assign = $ '#assign'
+	assign.manifest
+
+		required: true
+
+		formatDisplay: (data, $item) -> data.username
+
+		formatValue: (data, $item) -> data.id
+
+		formatRemove: -> '\u00D7'
+
+		marcoPolo:
+
+			url: '/users'
+
+			formatItem: (data, $item) ->
+				"<b>#{e(data.fullname)}</b> <i>#{e(data.username)}</i>"
+
+			###
+			onChange: (q) ->
+				this.data {user: null}
+				this.siblings('.validator').andSelf().removeClass 'valid'
+
+			onSelect: (data, $item) ->
+				this.data {user: data}
+				this.val data.username
+				this.siblings('.validator').andSelf().addClass 'valid'
+			###
+
+	###
 	assign.bind 'change marcopolochange', ->
 		self = $ this
 		self.toggleClass 'filled', !!self.val()
@@ -49,6 +78,7 @@ $ ->
 			this.data {user: data}
 			this.val data.username
 			this.siblings('.validator').andSelf().addClass 'valid'
+	###
 
 	name = $ '#name'
 	priority = $ '#priority'

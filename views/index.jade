@@ -57,9 +57,9 @@ html
 					#creation-right.wrap.flex.f-0
 						if actor.id !== context.id
 							.separator.mp_container.mp_full
-								.validator.icon: label(for='assign') @
-								input#assign.h.small.lockable(type="text",placeholder="Assign (you)",autocomplete='off')
-								.icon.delete.reset#reset-due(tabindex=0) &times;
+								.validator.icon: label(for='assign') assign
+								input#assign.h.small.lockable(type="text",autocomplete='off')
+								// .icon.delete.reset#reset-due(tabindex=0) &times;
 						.separator
 							.validator.icon.due: label(for='due',style="position:relative;top:2px;") due
 							input#due.h.date.medium.lockable(type="text",placeholder="",autocomplete='off')
@@ -73,20 +73,20 @@ html
 
 		include includes/footer
 
-		.hide
-			//- Templates
-			#single-task-view.tmpl
-				li.task(class="{status} priority-{priority}",tabindex=0)
-					.toggle &#10003;
-					.trash Trash
-					.archive Archive
-					.info
-						span.name {name}
-						span.assignedTo
-							| {#assignedTo}
-							span(class="{#closed}closed{/closed}")
-								span {username}
-							| {/assignedTo}
-						| {#due}
-						time(datetime="{dueDate}").dueDate {due}
-						| {/due}
+		// Templates
+
+		script(type="template/dust")#single-task-view.tmpl
+			li.task(class="{status} priority-{priority}",tabindex=0)
+				.toggle &#10003;
+				.trash Trash
+				.archive Archive
+				.info
+					span.name {name}
+					span.assignedTo
+						| {#assignedTo}
+						span(class="{#closed}closed{/closed}")
+							span {username}
+						| {/assignedTo}
+					| {#due}
+					time(datetime="{dueDate}").dueDate {due}
+					| {/due}

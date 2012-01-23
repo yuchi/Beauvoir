@@ -187,22 +187,24 @@ AppView = Backbone.View.extend
 
 		throw "Environment not initialized" unless @actor? and @context?
 
-		@creation = new Creation
-			app: @
+		@creation = new Creation { app: @ }
 
 	addOne: (task) ->
-		view = new TaskView {model: task}
+		view = new TaskView { model: task }
 		$(@el).append view.render().el
 
 	addAll: (collection) ->
 		collection.each @addOne
 
 	create: (name, assignedTo, due, priority = 1) ->
+
+		console.log { assignedTo }
+
 		Tasks.create
 			dueDate: due
 			name: name
 			priority: priority
-			assignedTo: [assignedTo]
+			assignedTo: _.flatten [ assignedTo ]
 
 	# Interface
 
@@ -233,7 +235,7 @@ Creation = Backbone.View.extend
 			callback()
 			(@$name.val '').change()
 			(@$due.val '').change()
-			@$assign.marcoPolo 'change', ''
+			@$assign.manifest 'remove'
 		).animate {opacity:1}, 200
 		@
 
@@ -246,7 +248,7 @@ Creation = Backbone.View.extend
 			@empty => @app.create name, @getAssignedTo(), @getDue()
 		false
 
-	getAssignedTo: -> @$assign.data 'user'
+	getAssignedTo: -> @$assign.manifest 'values'
 
 	getName: -> @$name.val()
 

@@ -9,12 +9,13 @@ update = (req, res) ->
 	id = attributes.id
 	delete attributes.id
 
-	# remove assignations
-	assignedTo = attributes.assignedTo
-	delete attributes.assignedTo
+	assignedTo = _.compact _.flatten [ attributes.assignedTo ]
+	assignedUsers = []
 
+	###
 	if _.isArray assignedTo
 		assignedTo = assignedTo[0]
+	###
 
 	# is updating?
 	task = req.task or new models.Task id
@@ -36,7 +37,8 @@ update = (req, res) ->
 	# `assigning` attributes from json
 	assigning = !!attributes.assigning
 
-	for prop in ['closed','open','opening','closing','assigning','status']
+	# Removing polluted attributes
+	for prop in ['closed','open','opening','closing','assigning','status','assignedTo']
 		delete attributes[prop]
 
 	# setting things up
@@ -44,7 +46,10 @@ update = (req, res) ->
 
 	complete = ->
 		if assigning or not req.task?
-			task.link assignedUser, 'assignedTo'
+			##task.link assignedUser, 'assignedTo'
+			for assignedUser in assignedUsers
+				task.link assignedUser, 'assignedTo'
+
 		if closing
 			task.link actor, 'assignedTo'
 			task.link actor, 'closedBy'
@@ -73,10 +78,41 @@ update = (req, res) ->
 				winston.debug JSON.stringify task.errors
 				res.send 500
 
-	actor = new models.User req.session.userId
+	actor = null
+
+	models.User.load req.session.userId, (err, props) ->
+
+		actor = @
+
+		if err
+			winston.error err
+			return
+
+		if assignedTo.length == 0
+			assignedUsers.push actor
+
+		(tick = (counter) ->
+
+			assignedUserId = assignedTo[ counter ]
+
+			if assignedUserId
+				models.User.load (assignedUserId.id or assignedUserId), (err, props) ->
+					if err
+						winston.error "Error retrieving user"
+
+					assignedUsers.push this
+
+					tick ++counter
+
+			else
+				complete()
+
+		)(0)
+
+	###
 
 	if assignedTo
-		console.dir assignedTo
+
 		# assignedToId = assignedTo.id or assignedTo
 		assignedUser = new models.User (assignedTo.id or assignedTo)
 		assignedUser.load (assignedTo.id or assignedTo), (err, props) ->
@@ -96,6 +132,8 @@ update = (req, res) ->
 				complete()
 			else
 				winston.error 'Error retrieving users'
+
+	###
 
 _.extend exports,
 

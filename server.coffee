@@ -70,6 +70,12 @@ app.dynamicHelpers
 
 
 ###
+# Static serving for images
+###
+
+app.get '*.png', express.static __dirname + '/assets'
+
+###
 # Routes
 ###
 
@@ -141,10 +147,6 @@ app.post '/context-settings', auth.restrict(), (req, res) ->
 			else
 				res.send 500
 
-###
-app.get '/public/*.(js|css|png)', (req, res) ->
-	res.sendfile './' + req.url
-###
 
 ###
 # Resources

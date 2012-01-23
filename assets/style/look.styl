@@ -352,6 +352,7 @@ f_valid = c_blue
 					width 160px
 		&.small
 			width 120px
+			min-width 40px
 		&.date
 			width 14ex
 		&.lockable
@@ -439,6 +440,27 @@ f_valid = c_blue
 			.icon.delete
 				float right
 
+// Helping Manifest UI looking pretty
+
+div.mf_container ol.mf_list
+	margin-left 5px
+
+	li.mf_item
+		vertical-align middle
+		border 1px solid c_blue
+		border-radius 2px
+		background lighten( c_blue, 50 )
+		line-height 21px
+		font-size 18px
+		padding 2px 4px
+		margin 0 2px
+
+		a.mf_remove
+			overflow hidden
+			display inline-block
+			margin-left 10px
+			text-decoration none
+			color c_red
 
 // Helping jQuery UI looking pretty
 .ui-widget
