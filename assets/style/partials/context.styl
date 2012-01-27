@@ -32,7 +32,7 @@ cs_strong = darken(cs_normal,20)
 		border-radius 2px
 		html.loaded &
 			transition border fast, background fast
-		&:hover,&:focus
+		&:hover, &:focus, &.hover
 			border-color cs_strong
 			background cs_normal
 
@@ -98,9 +98,9 @@ cs_strong = darken(cs_normal,20)
 				color #666
 				text-decoration none
 			&.current a
-				&,&:hover,&:focus
+				&, &:hover, &:focus, &.hover
 					color lighten(gray, 20)
-			a:focus, a:hover
+			a:focus, a:hover, a.hover
 					color black
 
 			.icon
@@ -115,7 +115,7 @@ cs_strong = darken(cs_normal,20)
 		.actions
 			a
 				padding 8px 10px 6px
-				&:hover, &:focus
+				&:hover, &:focus, &.hover
 					color black
 					background lighten(silver,10)
 

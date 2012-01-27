@@ -87,9 +87,16 @@ TaskView = Backbone.View.extend
 
 	keyEvents:
 		keyup:
+			# Enter
 			13: 'toggle'
+			# Delete
 			8:  'archive'
+			# Canc
 			46: 'trash'
+			# Up
+			38: 'focusPrev'
+			# Down
+			40: 'focusNext'
 		keydown:
 			8:  'noop'
 
@@ -150,6 +157,9 @@ TaskView = Backbone.View.extend
 		@
 
 	noop: -> false
+
+	focusPrev: (event) -> ($ @el).prev().focus()
+	focusNext: (event) -> ($ @el).next().focus()
 
 	###
 	open: (event) ->

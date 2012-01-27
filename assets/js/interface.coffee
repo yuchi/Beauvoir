@@ -2,36 +2,101 @@ $ ->
 
 	($ 'html').addClass 'loaded'
 
-	($ '.dd-icon:not(.fake)').bind 'click keyup', (e) ->
-		if e.type == 'click' or +event.which == +13
-			self = ($ @)
-			panel = self.closest('.dd-wrapper')
-			active = panel.hasClass 'opened'
-			self.closest('.dd-list').find('.dd-wrapper').removeClass 'opened'
-			panel.toggleClass 'opened', not active
+	dropdowns = $ '.dd-icon:not(.fake)'
+	dropdowns.on 'mousedown keydown', (e) ->
 
-	($ '.input')
-		.live( 'focusin', (event) ->
+		if e.type == 'mousedown' or e.which in [13, 37, 38, 39, 40]
+			e.preventDefault()
+
+			self = ($ @)
+			wrapper = self.closest '.dd-wrapper'
+			panel = wrapper.find '.dd-panel'
+			active = wrapper.hasClass 'opened'
+
+			if e.which == 40 and active
+				panel.find( 'a, .action' ).eq(0).focus()
+				return
+
+			if e.which == 38 and not active
+				return
+
+			if e.which == 39
+				next = wrapper.next().find('.dd-icon').focus()
+				next.mousedown() if active
+				return
+
+			if e.which == 37
+				prev = wrapper.prev().find('.dd-icon').focus()
+				prev.mousedown() if active
+				return
+
+			self.closest('.dd-list').find('.dd-wrapper').removeClass 'opened'
+			wrapper.toggleClass 'opened', not active
+
+	dropdowns.next().find( 'a, .action' ).on
+		hover: (e) ->
+			$(this).toggleClass 'hover', e.type == 'mouseenter'
+
+		keydown: (e) ->
+			return if e.which not in [ 38, 40 ]
+
+			e.preventDefault()
+
+			dir = if e.which == 38 then 'prev' else 'next'
+			self = $ this
+			to = self[ dir ]()
+			if not to.length
+				to = self.parent()[ dir ]().find( 'a, .action' )
+				to = to.eq if dir is 'next' then 0 else -1
+
+			if dir is 'prev' and not to.length
+				wrapper = self.closest '.dd-wrapper'
+				#wrapper.removeClass 'opened'
+				wrapper.find('.dd-icon').focus()
+				return
+
+			to.focus()
+			
+
+		mouseup: ->
+			self = $(this).click (e) ->
+				href = self.attr 'href'
+				if href? and not e.isDefaultPrevented()
+					window.location.href = href
+			self.click()
+
+	$(document).on(
+
+		# focusable forms
+
+		focusin: (event) ->
 			self = $ event.target
 			self.closest('.input').andSelf().toggleClass 'focus', true
-		)
-		.live( 'focusout', (event) ->
+		focusout: (event) ->
 			self = $ event.target
 			self.closest('.input').andSelf().toggleClass 'focus', false
-		)
+		'.input'
 
-	($ '.modal-closer')
-		.live( 'click', (event) ->
+	).on(
+
+		# Modal openers
+
+		click: (event) ->
 			self = $ event.target
 			self.closest('.modal').hide()
-		)
+		'.modal-closer'
 
-	($ '.modal-opener')
-		.live( 'click', (event) ->
+	).on(
+
+		# Modal closers
+
+		click: (event) ->
 			self = $ event.target
 			($ self.attr 'href').show()
 			event.preventDefault()
-		)
+		'.modal-opened'
+
+	)
 
 	assign = $ '#assign'
 	assign.manifest
