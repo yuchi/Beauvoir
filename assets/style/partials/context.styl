@@ -30,11 +30,17 @@ cs_strong = darken(cs_normal,20)
 		padding 0 10px
 		border 1px solid cs_normal
 		border-radius 2px
+
 		html.loaded &
 			transition border fast, background fast
+
 		&:hover, &:focus, &.hover
 			border-color cs_strong
 			background cs_normal
+
+		&:focus
+			border-color c_blue
+			outline none
 
 		img.avatar
 			display inline-block
@@ -101,7 +107,10 @@ cs_strong = darken(cs_normal,20)
 				&, &:hover, &:focus, &.hover
 					color lighten(gray, 20)
 			a:focus, a:hover, a.hover
-					color black
+				color black
+
+			a:focus
+				outline 1px solid c_blue
 
 			.icon
 				display inline-block
