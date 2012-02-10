@@ -1,21 +1,22 @@
 
 _ = require 'underscore'
 nohm = require 'nohm'
+auth = require '../authentication'
 models = require '../models'
 winston = require 'winston'
+helpers = require '../utils/helpers'
+{ cascade, multiLoad } = helpers
 
-update = (req, res) ->
+update = (req, res) -> auth.loadActor req, res, ->
+
+	actor = null
+
 	attributes = _.clone req.body
 	id = attributes.id
 	delete attributes.id
 
 	assignedTo = _.compact _.flatten [ attributes.assignedTo ]
 	assignedUsers = []
-
-	###
-	if _.isArray assignedTo
-		assignedTo = assignedTo[0]
-	###
 
 	# is updating?
 	task = req.task or new models.Task id
@@ -38,126 +39,174 @@ update = (req, res) ->
 	assigning = !!attributes.assigning
 
 	# Removing polluted attributes
-	for prop in ['closed','open','opening','closing','assigning','status','assignedTo']
+	for prop in ['closed','open','opening','closing','assigning','status','assignedTo','editable']
 		delete attributes[prop]
 
 	# setting things up
-	task.p attributes
+	unless closing or opening 
+		task.p attributes
 
-	complete = ->
-		if assigning or not req.task?
-			##task.link assignedUser, 'assignedTo'
-			for assignedUser in assignedUsers
-				task.link assignedUser, 'assignedTo'
+	if not task.p 'creator'
+		task.p creator: req.session.userId
 
-		if closing
-			task.link actor, 'assignedTo'
-			task.link actor, 'closedBy'
-		else if opening
-			task.unlink actor, 'closedBy'
+	actor = req.actor
 
-		#task.link owner, 'createdBy'
+	cascade this,
 
-		task.save (err, relationError, relationName) ->
+		( next ) ->
+
+			permission = if closing or opening then 'act' else 'update'
+
+			task.hasPermission actor, permission, (err, can) ->
+				unless err or not can
+					next()
+				else
+					winston.error err or "Permission denied"
+
+		( next ) ->
+
+			multiLoad assignedTo, ( err, results ) ->
+				assignedUsers = results
+				if results.length == 0
+					assignedUsers.push actor
+				next()
+
+		( next ) ->
+
+			if assigning or not req.task?
+				##task.link assignedUser, 'assignedTo'
+				for assignedUser in assignedUsers
+					task.link assignedUser, 'assignedTo'
+
+			if closing
+				task.link actor, 'assignedTo'
+				task.link actor, 'closedBy'
+			else if opening
+				task.unlink actor, 'closedBy'
+
+			#task.link owner, 'createdBy'
+
+			task.save next
+
+		( next, err, relationError, relationName ) ->
+
 			if not err
-				winston.info "Task \##{task.id} #{action}d successfully"
-				task.expose (err, json) ->
-					if not err
-						res.send json
-					else
-						winston.error "Error retrieving task data"
+				winston.info "Task #{task.id} #{action}d successfully"
+				task.expose actor, next
+
 			else if relationError
 				action = if relationName == 'assignedTo' then 'assign' else 'completely create'
 				if relationName
 					winston.error "There has been a relationError"
-				winston.error "Task \##{task.id} could not be #{action}d"
-				winston.debug JSON.stringify task.errors
+				winston.error "Task #{task.id} could not be #{action}d"
 				res.send 500
 			else
-				winston.error "Task \##{task.id} could not be #{action}d"
-				winston.debug JSON.stringify task.errors
+				winston.error "Task #{task.id} could not be #{action}d"
 				res.send 500
 
-	actor = null
+		( next, err, json ) -> 
 
-	models.User.load req.session.userId, (err, props) ->
-
-		actor = @
-
-		if err
-			winston.error err
-			return
-
-		if assignedTo.length == 0
-			assignedUsers.push actor
-
-		(tick = (counter) ->
-
-			assignedUserId = assignedTo[ counter ]
-
-			if assignedUserId
-				models.User.load (assignedUserId.id or assignedUserId), (err, props) ->
-					if err
-						winston.error "Error retrieving user"
-
-					assignedUsers.push this
-
-					tick ++counter
-
-			else
-				complete()
-
-		)(0)
-
-	###
-
-	if assignedTo
-
-		# assignedToId = assignedTo.id or assignedTo
-		assignedUser = new models.User (assignedTo.id or assignedTo)
-		assignedUser.load (assignedTo.id or assignedTo), (err, props) ->
 			if not err
-				actor.load req.session.userId, (err, props) ->
-					if not err
-						complete()
-					else
-						winston.error 'Error retrieving users'
-						console.dir err
+				res.send json
 			else
-				winston.error 'Error retrieving user \#'+(assignedTo.id or assignedTo)
-	else
-		assignedUser = actor
-		actor.load req.session.userId, (err, props) ->
-			if not err
-				complete()
-			else
-				winston.error 'Error retrieving users'
-
-	###
+				winston.error "Error retrieving task data"
 
 _.extend exports,
 
-	index: (req, res) ->
+	index: (req, res) -> auth.loadActor req, res, ->
+
+		objects = []
+		complete = (err, ids) ->
+
+			if err
+				winston.error "Task list could not be retrieved"
+				res.send 500
+				return
+
+			pass = _.after ids.length, ->
+				winston.info "Tasks list successfully retrieved"
+				res.send objects
+
+			_.each ids, (id) ->
+				models.Task.load id, (err, properties) ->
+					if not err
+						@expose req.actor, (err, object) =>
+							if not err
+								objects.push object unless @isArchived()
+								pass()
+							else
+								winston.error 'Error retrieving task properties'
+
+					else
+						winston.error "Some error occured loading Task #{id}"
+						pass()
+
+		if req.user?
+			models.Task.find { context: req.user.id }, complete
+		else
+			models.Task.find complete
+
+	###
+	index: (req, res) -> # auth.loadActor req, res, ->
+
+		objects = []
+		complete = (err, ids) ->
+
+			if err
+				winston.error "Task list could not be retrieved"
+				res.send 500
+				return
+
+			pass = _.after ids.length, ->
+				winston.info "Tasks list successfully retrieved"
+				res.send objects
+
+			_.each ids, (id) ->
+				models.Task.load id, (err, properties) ->
+					if not err
+						@expose req.actor, (err, object) =>
+							if not err
+								objects.push object unless @isArchived()
+								pass()
+							else
+								winston.error 'Error retrieving task properties'
+
+					else
+						winston.error "Some error occured loading Task #{id}"
+						pass()
+
+		if req.user?
+			models.Task.find { context: req.user.id }, complete
+		else
+			models.Task.find complete
+
+	###
+	index: (req, res) -> # auth.loadActor req, res, ->
+
 		objects = []
 		complete = (err, ids) ->
 			if not err
-				(pass = _.after ids.length+1, ->
+
+				pass = _.after ids.length, ->
 					winston.info "Tasks list successfully retrieved"
 					res.send objects
-				)()
+
 				_.each ids, (id) ->
 					models.Task.load id, (err, properties) ->
-						if not err
-							@expose (err, object) =>
-								if not err
-									objects.push object unless @isArchived()
-									pass()
-								else
-									winston.error 'Error retrieving task properties'
 
-						else
-							winston.error "Some error occured loading Task \##{id}"
+						if err
+							winston.error "Some error occured loading Task #{id}"
+							return pass()
+
+						if @isArchived()
+							return pass
+
+						@expose (err, object) =>
+							if err then winston.error 'Error retrieving task properties'
+							
+							objects.push object 
 							pass()
+
 			else
 				winston.error "Task list could not be retrieved"
 				res.send 500
@@ -166,27 +215,41 @@ _.extend exports,
 			models.Task.find { context: req.user.id }, complete
 		else
 			models.Task.find complete
+		###
 
 
-	show: (req, res) ->
-		req.task.expose (err, json) ->
-			if not err
+	show: (req, res) ->	auth.loadActor req, res, ->
+
+		req.task.hasPermission req.actor, 'view', ( err, can ) ->
+
+			if err or not can
+				return res.send 500
+
+			req.task.expose req.actor, (err, json) ->
+				if err
+					return res.send 500
+
 				res.send json
-			else
-				res.send 500
+
 
 	create: update
+
 	update: update
 
-	destroy: (req, res) ->
+	destroy: (req, res) -> auth.loadActor req, res, ->
 		id = req.task.id
-		req.task.remove (err) ->
-			if not err
-				winston.info "Task \##{id} removed successfully"
-				res.send req.task.allProperties true
-			else
-				winston.error "Task \##{id} could not be removed"
-				res.send 500
+		req.task.hasPermission req.actor, 'delete', ( err, can ) ->
+
+			if err or not can
+				return res.send 500
+
+			req.task.remove (err) ->
+				if not err
+					winston.info "Task #{id} removed successfully"
+					res.send req.task.allProperties true
+				else
+					winston.error "Task #{id} could not be removed"
+					res.send 500
 
 	load: (id, fn) ->
 		task = new models.Task

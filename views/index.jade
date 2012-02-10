@@ -78,8 +78,10 @@ html
 		script(type="template/dust")#single-task-view.tmpl
 			li.task(class="{status} priority-{priority}",tabindex=0)
 				.toggle &#10003;
+				| {#editable}
 				.trash Trash
 				.archive Archive
+				| {/editable}
 				.info
 					span.name {name}
 					span.assignedTo

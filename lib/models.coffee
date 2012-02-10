@@ -5,6 +5,8 @@ winston = require 'winston'
 _ = require 'underscore'
 _.mixin require 'underscore.string'
 hashlib = require './utils/hashlib'
+helpers = require './utils/helpers'
+{ cascade, multiLoad } = helpers
 
 redis = require 'redis'
 persistence = redis.createClient()
@@ -167,6 +169,9 @@ Task = nohm.model 'Task',
 		context:
 			type: 'string'
 			index: true
+		creator:
+			type: 'string'
+			defaultValue: ''
 		priority:
 			type: 'integer'
 			index: false
@@ -205,43 +210,82 @@ Task = nohm.model 'Task',
 			else
 				arch != 'false'
 
-		# Async!
-		expose: (callback) ->
+
+		hasPermission: (user, action, callback) ->
+			task = @
+
+			if user.id in [ @p('context'), @p('creator') ]
+				return callback null, true
+
+			User.load @p('context'), (err, props) ->
+				return callback err if err
+				switch action
+
+					when 'act', 'view'
+						@.belongsTo user, 'child', callback
+
+					when 'update', 'delete'
+						@.belongsTo user, 'admin', callback
+
+
+		expose: ( actor, callback ) ->
 
 			task = @
+
+			if typeof actor == 'function'
+				callback = actor
+				actor = null
 
 			attributes = @allProperties()
 			attributes.archived = @isArchived()
 			attributes.assignedTo = []
 
-			@getAll 'User', 'assignedTo', (err, ids) =>
-				(pass = _.after ids.length+1, _.once =>
+			cascade this,
+
+				( next ) ->
+
+					@getAll 'User', 'assignedTo', (err, ids) ->
+
+						if err
+							winston.error "Error retrieving assigned users to task \##{@id}"
+							return callback err
+
+						pass = _.after ids.length, next
+
+						for userId in ids
+							# console.dir userId
+							User.load userId, (err, properties) ->
+								if not err
+									userAttributes = @expose()
+									task.belongsTo @, 'closedBy', (err, closed) ->
+										if not err
+											userAttributes.closed = closed
+											attributes.assignedTo.push userAttributes
+										else
+											callback err
+											winston.error "Error retrieving closing status for user \##{userId}"
+										pass()
+								else
+									pass()
+									callback err
+									winston.error "Error retrieving user \##{userId}"
+
+				( next ) ->
+
 					attributes.archived = @isArchived()
 					attributes.closed = @isClosed attributes
+
+					if actor
+						task.hasPermission actor, 'update', next
+					else
+						next null, false
+
+				( next, err, editable ) ->
+
+					attributes.editable = true if editable
+
 					callback null, attributes
-				)()
-				console.dir ids
-				if not err
-					for userId in ids
-						console.dir userId
-						User.load userId, (err, properties) ->
-							if not err
-								userAttributes = @expose()
-								task.belongsTo @, 'closedBy', (err, closed) ->
-									if not err
-										userAttributes.closed = closed
-										attributes.assignedTo.push userAttributes
-										pass()
-									else
-										callback err
-										winston.error "Error retrieving closing status for user \##{userId}"
-							else
-								callback err
-								winston.error "Error retrieving user \##{userId}"
-				else
-					callback err
-					winston.error "Error retrieving assigned users to task \##{@id}"
-			return @
+
 
 		isClosed: (json) ->
 			minimum = @property 'minimum'

@@ -17,6 +17,7 @@ Task = Backbone.Model.extend
 	defaults: ->
 		name: ''
 		priority: 1
+		editable: false
 		closed: false
 		archived: false
 		context: App.context.id
@@ -26,7 +27,7 @@ Task = Backbone.Model.extend
 		'completed' : 'open'
 
 	initialize: (attributes = {}) ->
-		### Not elegant... ###
+		# Not elegant...
 		if not attributes.priority? or attributes.priority == 1
 			attributes.name or= ''
 			this.set
@@ -139,27 +140,35 @@ TaskView = Backbone.View.extend
 		@model.save params,
 			success: => @model.unset 'closing'			
 
+	isEditable: -> !! @model.get 'editable'
+
 	archive: (event) ->
-		event?.preventDefault()
-		return if not @model.get 'closed'
-		@toggleClass 'archiving', true
-		root.App.confirm "Do you really want to archive this task?", (really) =>
-			@model.archive() unless not really
-			@toggleClass 'archiving', false
+		if @isEditable()
+			event?.preventDefault()
+			return if not @model.get 'closed'
+			@toggleClass 'archiving', true
+			root.App.confirm "Do you really want to archive this task?", (really) =>
+				@model.archive() unless not really
+				@toggleClass 'archiving', false
 		@
 
 	trash: (event) ->
-		event?.preventDefault()
-		@toggleClass 'trashing', true
-		root.App.confirm "Do you really want to trash this task?", (really) =>
-			@model.destroy() unless not really
-			@toggleClass 'trashing', false
+		if @isEditable()
+			event?.preventDefault()
+			@toggleClass 'trashing', true
+			root.App.confirm "Do you really want to trash this task?", (really) =>
+
+				if @el is document.activeElement
+					@focusPrev() or @focusNext()
+
+				@model.destroy() unless not really
+				@toggleClass 'trashing', false
 		@
 
 	noop: -> false
 
-	focusPrev: (event) -> ($ @el).prev().focus()
-	focusNext: (event) -> ($ @el).next().focus()
+	focusPrev: (event) -> !! ($ @el).prev().focus().length
+	focusNext: (event) -> !! ($ @el).next().focus().length
 
 	###
 	open: (event) ->

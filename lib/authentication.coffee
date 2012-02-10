@@ -94,18 +94,30 @@ loadContextName = exports.loadContextName = (req, res, next) ->
 
 loadContext = exports.loadContext = (req, res, next) ->
 	loadContextName req, res, ->
-		if req.contextName?
-			models.User.find { username: req.contextName }, (err, ids) ->
-				res.send 500 if not ids?.length
-				models.User.load ids[0], (err, properties) ->
-					if not err
-						req.context = @
-						next()
-					else
-						res.send 500
-		else
-			# TODO
-			res.send 500
+		if not req.contextName?
+			return res.send 500
+
+		models.User.find { username: req.contextName }, (err, ids) ->
+
+			return res.send 500 if not ids?.length
+
+			models.User.load ids[0], (err, properties) ->
+
+				if err
+					return res.send 500
+
+				if req.actor.id is @.id
+					req.context = @
+					next()
+					return
+
+				@.belongsTo req.actor, (err, has) ->
+					if err or not has
+						return res.send 500
+
+					req.context = @
+					next()
+
 
 loadAvailableContexts = exports.loadAvailableContexts = (req, res, next) ->
 	complete = ->
