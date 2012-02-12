@@ -199,7 +199,7 @@ _.extend exports,
 							return pass()
 
 						if @isArchived()
-							return pass
+							return pass()
 
 						@expose req.actor, (err, object) =>
 							if err then winston.error 'Error retrieving task properties'
