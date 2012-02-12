@@ -181,7 +181,7 @@ _.extend exports,
 			models.Task.find complete
 
 	###
-	index: (req, res) -> # auth.loadActor req, res, ->
+	index: (req, res) -> auth.loadActor req, res, ->
 
 		objects = []
 		complete = (err, ids) ->
@@ -201,7 +201,7 @@ _.extend exports,
 						if @isArchived()
 							return pass
 
-						@expose (err, object) =>
+						@expose req.actor, (err, object) =>
 							if err then winston.error 'Error retrieving task properties'
 							
 							objects.push object 
@@ -215,8 +215,6 @@ _.extend exports,
 			models.Task.find { context: req.user.id }, complete
 		else
 			models.Task.find complete
-		###
-
 
 	show: (req, res) ->	auth.loadActor req, res, ->
 
