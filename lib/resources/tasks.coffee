@@ -116,82 +116,27 @@ _.extend exports,
 	index: (req, res) -> auth.loadActor req, res, ->
 
 		objects = []
-		complete = (err, ids) ->
 
-			if err
-				winston.error "Task list could not be retrieved"
-				res.send 500
-				return
+		cascade null,
 
-			pass = _.after ids.length, ->
-				winston.info "Tasks list successfully retrieved"
-				res.send objects
+			( next ) ->
 
-			_.each ids, (id) ->
-				models.Task.load id, (err, properties) ->
-					if not err
-						@expose req.actor, (err, object) =>
-							if not err
-								objects.push object unless @isArchived()
-								pass()
-							else
-								winston.error 'Error retrieving task properties'
+				if req.user?
+					models.Task.find { context: req.user.id }, next
+				else
+					models.Task.find next
 
-					else
-						winston.error "Some error occured loading Task #{id}"
-						pass()
+			( next, err, ids ) ->
 
-		if req.user?
-			models.Task.find { context: req.user.id }, complete
-		else
-			models.Task.find complete
+				if err
+					winston.error "Task list could not be retrieved"
+					res.send 500
+					return
 
-	###
-	index: (req, res) -> # auth.loadActor req, res, ->
+				pass = _.after ids.length, next
 
-		objects = []
-		complete = (err, ids) ->
+				for id in ids
 
-			if err
-				winston.error "Task list could not be retrieved"
-				res.send 500
-				return
-
-			pass = _.after ids.length, ->
-				winston.info "Tasks list successfully retrieved"
-				res.send objects
-
-			_.each ids, (id) ->
-				models.Task.load id, (err, properties) ->
-					if not err
-						@expose req.actor, (err, object) =>
-							if not err
-								objects.push object unless @isArchived()
-								pass()
-							else
-								winston.error 'Error retrieving task properties'
-
-					else
-						winston.error "Some error occured loading Task #{id}"
-						pass()
-
-		if req.user?
-			models.Task.find { context: req.user.id }, complete
-		else
-			models.Task.find complete
-
-	###
-	index: (req, res) -> auth.loadActor req, res, ->
-
-		objects = []
-		complete = (err, ids) ->
-			if not err
-
-				pass = _.after ids.length, ->
-					winston.info "Tasks list successfully retrieved"
-					res.send objects
-
-				_.each ids, (id) ->
 					models.Task.load id, (err, properties) ->
 
 						if err
@@ -201,20 +146,17 @@ _.extend exports,
 						if @isArchived()
 							return pass()
 
-						@expose req.actor, (err, object) =>
+						@expose req.actor, (err, object) ->
+
 							if err then winston.error 'Error retrieving task properties'
-							
 							objects.push object 
 							pass()
 
-			else
-				winston.error "Task list could not be retrieved"
-				res.send 500
+			( next ) ->
 
-		if req.user?
-			models.Task.find { context: req.user.id }, complete
-		else
-			models.Task.find complete
+				winston.info "Tasks list successfully retrieved"
+				res.send objects
+
 
 	show: (req, res) ->	auth.loadActor req, res, ->
 
