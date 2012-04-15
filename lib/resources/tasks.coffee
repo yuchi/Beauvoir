@@ -39,8 +39,8 @@ update = (req, res) -> auth.loadActor req, res, ->
 	assigning = !!attributes.assigning
 
 	# Removing polluted attributes
-	for prop in ['closed','open','opening','closing','assigning','status','assignedTo','editable']
-		delete attributes[prop]
+	for prop in ['closed', 'open', 'opening', 'closing', 'assigning', 'status', 'assignedTo', 'editable']
+		delete attributes[ prop ]
 
 	# setting things up
 	unless closing or opening 
@@ -177,6 +177,7 @@ _.extend exports,
 	update: update
 
 	destroy: (req, res) -> auth.loadActor req, res, ->
+
 		id = req.task.id
 		req.task.hasPermission req.actor, 'delete', ( err, can ) ->
 
@@ -192,6 +193,7 @@ _.extend exports,
 					res.send 500
 
 	load: (id, fn) ->
+
 		task = new models.Task
 		task.load id, (err, properties) ->
 			return fn new Error 'No such task' if err
