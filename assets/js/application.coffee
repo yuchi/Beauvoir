@@ -187,8 +187,17 @@ TaskView = Backbone.View.extend
 			@hide()
 		@
 
-	hide: ->
-		$(@el).slideUp 'slow'
+	show: ( animate = true ) ->
+		if animate
+			$(@el).slideDown 'slow'
+		else
+			$(@el).show()
+
+	hide: ( animate = true ) ->
+		if animate
+			$(@el).slideUp 'slow'
+		else
+			$(@el).hide()
 
 AppView = Backbone.View.extend
 
@@ -207,6 +216,9 @@ AppView = Backbone.View.extend
 		throw "Environment not initialized" unless @actor? and @context?
 
 		@creation = new Creation { app: @ }
+		@workspace = new Workspace { app: @ }
+
+		@filterType = null
 
 	addOne: (task) ->
 		view = new TaskView { model: task }
@@ -230,6 +242,25 @@ AppView = Backbone.View.extend
 
 		Tasks.create props
 
+	filter: ( type ) ->
+		if type != @filterType
+			trigger = $ '#active-filter'
+			current = $( ".filter[href='##{type}']" ).closest 'li'
+			current.siblings().removeClass 'current'
+			current.addClass 'current'
+			trigger.text current.text()
+			@filterType = type
+			@refresh()
+
+	refresh: ->
+		all = @filterType == 'all'
+		closed = @filterType == 'closed'
+		Tasks.each ( task ) ->
+			if all || closed == task.get 'closed'
+				task.view.show no
+			else
+				task.view.hide no
+
 	# Interface
 
 	confirm: (message, callback) ->
@@ -240,8 +271,6 @@ AppView = Backbone.View.extend
 		callback result
 
 Creation = Backbone.View.extend
-	events:
-		'submit' : 'submit'
 
 	defaults: (dynamic) ->
 		el: $ '#creation'
@@ -252,6 +281,7 @@ Creation = Backbone.View.extend
 	initialize: (options) ->
 		options or= {}
 		_.extend @, @defaults(), options
+		@el.on 'submit', _.bind @submit, @
 		@delegateEvents()
 
 	empty: (callback) ->
@@ -270,7 +300,6 @@ Creation = Backbone.View.extend
 			@$name.focus()
 		else
 			@empty => @app.create name, @getAssignedTo(), @getDue()
-		false
 
 	getAssignedTo: -> @$assign.manifest 'values'
 
@@ -280,12 +309,34 @@ Creation = Backbone.View.extend
 		val = + new Date @$due.val()
 		if isNaN val then null else val
 
+# Filtering
+
+Workspace = Backbone.Router.extend
+	
+	routes:
+		"all" : "filterAll"
+		"closed" : "filterClosed"
+		"open" : "filterOpen"
+
+	initialize: ( options ) ->
+		_.extend @, options
+		@
+
+	filterAll: -> @filter 'all', arguments
+	filterClosed: -> @filter 'closed', arguments
+	filterOpen: -> @filter 'open', arguments
+
+	filter: ( type ) -> App.filter type
+
+
 # Build and expose
 # ----------------
 
 $ ->
 	App = root.App = new AppView
 	Tasks.fetch()
+	Backbone.history.start()
+	App.filter 'all'
 
 _.extend root,
 	Tasks: Tasks

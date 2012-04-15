@@ -1,0 +1,11 @@
+#filters.dd-wrapper
+	.dd-icon(tabindex=0,title="Settings")
+		span
+			span &#9883;&nbsp;
+			span#active-filter All tasks
+	.dd-panel
+		p Select a filter
+		ul.actions
+			li: a.filter(href="#all") All tasks
+			li: a.filter(href="#open") Open tasks
+			li: a.filter(href="#closed") Closed tasks

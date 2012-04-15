@@ -58,34 +58,7 @@ $ ->
 			formatItem: (data, $item) ->
 				"<b>#{e(data.fullname)}</b> <i>#{e(data.username)}</i>"
 
-			###
-			onChange: (q) ->
-				this.data {user: null}
-				this.siblings('.validator').andSelf().removeClass 'valid'
-
-			onSelect: (data, $item) ->
-				this.data {user: data}
-				this.val data.username
-				this.siblings('.validator').andSelf().addClass 'valid'
-			###
-
-	###
-	assign.bind 'change marcopolochange', ->
-		self = $ this
-		self.toggleClass 'filled', !!self.val()
-	assign.marcoPolo
-		url: '/users'
-		required: true
-		formatItem: (data, $item) ->
-			"<b>#{e(data.fullname)}</b> <i>#{e(data.username)}</i>"
-		onChange: (q) ->
-			this.data {user: null}
-			this.siblings('.validator').andSelf().removeClass 'valid'
-		onSelect: (data, $item) ->
-			this.data {user: data}
-			this.val data.username
-			this.siblings('.validator').andSelf().addClass 'valid'
-	###
+	# Priority
 
 	name = $ '#name'
 	priority = $ '#priority'
@@ -119,6 +92,14 @@ $ ->
 	# directly to the document. When the page resizes the input moves... but not the Darepicker.
 	($ window).resize ->
 		due.datepicker 'hide'
+
+	# Filters
+
+	filters = $ '#filters'
+	
+
+# Utils
+# =====
 
 e = escape = (string='') ->
     string.replace(/&(?!\w+;|#\d+;|#x[\da-f]+;)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;')
